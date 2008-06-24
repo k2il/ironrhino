@@ -1,15 +1,9 @@
-#summary One-sentence summary of this page.
-
 = Introduction =
 
-IronRhino is a web application skeleton to help develop Web applications quickly and efficiently. 
-at server side,it built on springframework,struts2,hibernate,spring security(acegi) and cas,sitemesh,compass,jboss rules(drools),activemq etc.it supports auto CRUD by just add simple annotation on domain model class. 
+IronRhino is a web application skeleton to help develop Web applications quickly and efficiently.
+
+at server side,it built on springframework,struts2,hibernate,spring security(acegi) and cas,sitemesh,compass,jboss rules(drools),activemq etc.it supports auto CRUD by just add simple annotation on domain model class.
+
 at browser side,it use jquery,jquery ui and jquery plugins ,it support ajax history,ajax form,ajax link,sortable table,tree view etc by just add some css class on elements.
 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
