@@ -28,7 +28,7 @@ cp keystore to tomcat's conf directory,and add below xml fragment to server.xml 
 	       keystoreFile="conf/keystore" keystorePass="ironrhino"
 	       truststoreFile="conf/keystore" truststorePass="ironrhino" URIEncoding="UTF-8"/>
 
-5.run test/org/ironrhino/InitData.java add some test data
+5.import this project into eclipse,and run test/org/ironrhino/InitData.java add some test data
 
 6.deploy this webapp and start tomcat
 
