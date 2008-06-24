@@ -1,0 +1,8 @@
+﻿docs\tomcat
+keystore server.xml
+
+keytool -import -keystore "%JAVA_HOME%"\jre\lib\security\cacerts -file server.crt -alias ironrhino
+enterpassword:changeit
+
+
+

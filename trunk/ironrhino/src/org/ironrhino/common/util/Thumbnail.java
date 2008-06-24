@@ -1,0 +1,65 @@
+package org.ironrhino.common.util;
+
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+public class Thumbnail {
+
+	private int height;
+
+	private int width;
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public static BufferedImage resize(Image image, int w, int h)
+			throws IOException {
+		BufferedImage bufImage = new BufferedImage(w, h,
+				BufferedImage.TYPE_INT_RGB);
+		bufImage.getGraphics().drawImage(image, 0, 0, w, h, null);
+		return bufImage;
+	}
+
+	public static BufferedImage resizeByHeight(Image image, int h)
+			throws IOException {
+		int w = (int) (image.getWidth(null) * h / image.getHeight(null));
+		return resize(image, w, h);
+	}
+
+	public static BufferedImage resizeByWidth(Image image, int w)
+			throws IOException {
+		int h = (int) (image.getHeight(null) * w / image.getWidth(null));
+		return resize(image, w, h);
+	}
+
+	public static BufferedImage resizeFix(Image image, int w, int h)
+			throws IOException {
+		if (image.getWidth(null) / image.getHeight(null) > w / h) {
+			return resizeByWidth(image, w);
+		} else {
+			return resizeByHeight(image, h);
+		}
+	}
+
+	public BufferedImage resizeFix(Image image) throws IOException {
+		if (image.getWidth(null) / image.getHeight(null) > width / height) {
+			return resizeByWidth(image, width);
+		} else {
+			return resizeByHeight(image, height);
+		}
+	}
+}

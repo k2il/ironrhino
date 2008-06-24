@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.directwebremoting.org/schema/spring-dwr http://www.directwebremoting.org/schema/spring-dwr-2.0.xsd">
+	<bean id="cacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" />
+	<bean id="templateProvider"
+		class="org.ironrhino.common.support.TemplateProvider">
+		<property name="allSharedVariables">
+			<map>
+				<entry key="siteBaseUrl" value="${siteBaseUrl}" />
+			</map>
+		</property>
+	</bean>
+	<bean id="eventPublisher"
+		class="org.ironrhino.core.event.EventPublisher" />
+	<bean id="applicationContextConsole"
+		class="org.ironrhino.core.ext.spring.BeanShellApplicationContextConsole">
+		<dwr:remote javascript="ApplicationContextConsole">
+			<dwr:include method="execute" />
+			<dwr:include method="set" />
+			<dwr:include method="get" />
+			<dwr:include method="call" />
+			<dwr:include method="callWithMap" />
+			<dwr:auth method="execute" role="ROLE_SUPERVISOR" />
+			<dwr:auth method="set" role="ROLE_SUPERVISOR" />
+			<dwr:auth method="get" role="ROLE_SUPERVISOR" />
+			<dwr:auth method="call" role="ROLE_SUPERVISOR" />
+			<dwr:auth method="callWithMap" role="ROLE_SUPERVISOR" />
+		</dwr:remote>
+	</bean>
+	<bean id="settingControl"
+		class="org.ironrhino.common.support.SettingControl" />
+	<bean id="regionTreeControl"
+		class="org.ironrhino.common.support.RegionTreeControl" />
+	<!--  
+		<bean id="resultPage" class="org.ironrhino.common.model.ResultPage"
+		scope="prototype" p:pageNo="1" p:pageSize="10" />
+	-->
+</beans>

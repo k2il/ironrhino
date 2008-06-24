@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /account/
+Disallow: /images/
+Disallow: /scripts/
+Disallow: /styles/
