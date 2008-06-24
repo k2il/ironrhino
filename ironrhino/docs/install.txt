@@ -1,5 +1,5 @@
 ﻿1.install mysql5 or higher,and create database use createdb.sql
-note:change username and password in src/resources/spring/applicationContext-base.xml if necessary (default username is root and no password)
+note:change username and password in src/resources/spring/applicationContext-base.xml if necessary (default is root and no password)
 
 2.install JDK5 or higher
 
@@ -28,6 +28,10 @@ cp keystore to tomcat's conf directory,and add below xml fragment to server.xml 
 	       keystoreFile="conf/keystore" keystorePass="ironrhino"
 	       truststoreFile="conf/keystore" truststorePass="ironrhino" URIEncoding="UTF-8"/>
 
-5.deploy this webapp and start tomcat
+5.run test/org/ironrhino/InitData.java add some test data
+
+6.deploy this webapp and start tomcat
+
+7.admin url: /backend/index,will redirect to cas login page,use admin:password login
 
 

@@ -211,15 +211,10 @@ public class EntityAction extends BaseAction {
 			dc.add(Restrictions.in("id", id));
 			List list = baseManager.getListByCriteria(dc);
 			if (list.size() > 0) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("(");
-				for (Object obj : list) {
+				for (Object obj : list)
 					baseManager.delete((Entity) obj);
-				}
-				sb.deleteCharAt(sb.length() - 1);
-				sb.append(")");
 				addActionMessage(getText("delete.success",
-						"delete  successfully", new String[] { sb.toString() }));
+						"delete  successfully"));
 			}
 		}
 		return SUCCESS;
