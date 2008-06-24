@@ -1,0 +1,11 @@
+1.建数据库,建数据表,导入初始化数据,数据库和数据表默认的编码设置为utf8,并且使用innodb的engine
+2.把开发的设置换成生产环境的设置,比如去掉hibernate的打印sql,log4j日志调成warn,struts2的devMode=false serve.static=false
+把struts的静态文件和模版文件copy出来
+为每个action配置特定的interceptor-stack,不一定要用默认的
+http://struts.apache.org/2.x/docs/performance-tuning.html
+3.生成正式环境的keystore,让tomcat使用这个tomcat,并且把电子证书导入jdk
+4.设置目录的链接,比如产品图片的目录,索引文件的目录
+
+5 URIEncoding="UTF-8" or useBodyEncodingForURI="true" tomcat/conf/server.xml/Connector
+
+6.用Yslow的firefox插件提高性能

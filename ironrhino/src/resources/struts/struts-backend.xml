@@ -1,0 +1,164 @@
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="backend" namespace="/backend"
+		extends="ironrhino-default">
+		<action name="change_password"
+			class="org.ironrhino.ums.action.ChangePasswordAction">
+			<result name="input">
+				/WEB-INF/view/jsp/backend/change_password.jsp
+			</result>
+		</action>
+		<action name="switch_user">
+			<result>/WEB-INF/view/jsp/backend/switch_user.jsp</result>
+		</action>
+		<action name="security_config">
+			<result>
+				/WEB-INF/view/jsp/backend/security_config.jsp
+			</result>
+		</action>
+		<action name="control_panel">
+			<result>/WEB-INF/view/jsp/backend/control_panel.jsp</result>
+		</action>
+	</package>
+	<package name="backend_common" namespace="/backend/common"
+		extends="ironrhino-default">
+		<!-- autoconfig
+			<action name="setting"
+			class="org.ironrhino.common.action.SettingAction">
+			<result name="success" type="redirectAction">
+			setting
+			</result>
+			<result name="list">
+			/WEB-INF/view/jsp/backend/common/setting_list.jsp
+			</result>
+			<result name="input">
+			/WEB-INF/view/jsp/backend/common/setting_input.jsp
+			</result>
+			</action>
+			<action name="region"
+			class="org.ironrhino.common.action.RegionAction">
+			<result name="success" type="redirectAction">region</result>
+			<result name="list">
+			/WEB-INF/view/jsp/backend/common/region_list.jsp
+			</result>
+			<result name="input">
+			/WEB-INF/view/jsp/backend/common/region_input.jsp
+			</result>
+			<result name="map">
+			/WEB-INF/view/jsp/backend/common/region_map.jsp
+			</result>
+			</action>
+		-->
+		<action name="customize_entity"
+			class="org.ironrhino.common.action.CustomizeEntityAction">
+			<result name="success">
+				/WEB-INF/view/jsp/backend/common/customize_entity.jsp
+			</result>
+		</action>
+	</package>
+	<package name="backend_online" namespace="/backend/online"
+		extends="ironrhino-default">
+		<action name="account"
+			class="org.ironrhino.online.action.backend.AccountAction">
+			<result name="success" type="redirectAction">
+				account
+			</result>
+			<result name="list">
+				/WEB-INF/view/jsp/backend/online/account_list.jsp
+			</result>
+			<result name="view">
+				/WEB-INF/view/jsp/backend/online/account_view.jsp
+			</result>
+		</action>
+	</package>
+	<!-- autoconfig
+		<package name="backend_ums" namespace="/backend/ums"
+		extends="ironrhino-default">
+		<action name="role"
+		class="org.ironrhino.ums.action.RoleAction">
+		<result name="success" type="redirectAction">role</result>
+		<result name="input">
+		/WEB-INF/view/jsp/backend/ums/role_input.jsp
+		</result>
+		<result name="list">
+		/WEB-INF/view/jsp/backend/ums/role_list.jsp
+		</result>
+		</action>
+		<action name="group"
+		class="org.ironrhino.ums.action.GroupAction">
+		<result name="success" type="redirectAction">group</result>
+		<result name="input">
+		/WEB-INF/view/jsp/backend/ums/group_input.jsp
+		</result>
+		<result name="list">
+		/WEB-INF/view/jsp/backend/ums/group_list.jsp
+		</result>
+		</action>
+		<action name="user"
+		class="org.ironrhino.ums.action.UserAction">
+		<result name="success" type="redirectAction">user</result>
+		<result name="input">
+		/WEB-INF/view/jsp/backend/ums/user_input.jsp
+		</result>
+		<result name="list">
+		/WEB-INF/view/jsp/backend/ums/user_list.jsp
+		</result>
+		<result name="view">
+		/WEB-INF/view/jsp/backend/ums/user_view.jsp
+		</result>
+		</action>
+		</package>
+		
+		<package name="backend_pms" namespace="/backend/pms"
+		extends="ironrhino-default">
+		<action name="category"
+		class="org.ironrhino.pms.action.CategoryAction">
+		<result name="success" type="redirectAction">
+		category
+		</result>
+		<result name="list">
+		/WEB-INF/view/jsp/backend/pms/category_list.jsp
+		</result>
+		<result name="input">
+		/WEB-INF/view/jsp/backend/pms/category_input.jsp
+		</result>
+		<result name="tree">
+		/WEB-INF/view/jsp/backend/pms/category_tree.jsp
+		</result>
+		</action>
+		<action name="product"
+		class="org.ironrhino.pms.action.ProductAction">
+		<result name="view" type="redirect">
+		/product/${product.code}.html
+		</result>
+		<result name="success" type="redirect">
+		/backend/pms/product?categoryId=${categoryId}
+		</result>
+		<result name="list">
+		/WEB-INF/view/jsp/backend/pms/product_list.jsp
+		</result>
+		<result name="input">
+		/WEB-INF/view/jsp/backend/pms/product_input.jsp
+		</result>
+		<result name="attribute">
+		/WEB-INF/view/jsp/backend/pms/product_attribute.jsp
+		</result>
+		<result name="picture">
+		/WEB-INF/view/jsp/backend/pms/product_picture.jsp
+		</result>
+		<result name="category">
+		/WEB-INF/view/jsp/backend/pms/product_category.jsp
+		</result>
+		<interceptor-ref name="fileUpload">
+		<param name="allowedTypes">
+		image/pjpeg,image/jpeg
+		</param>
+		</interceptor-ref>
+		<interceptor-ref name="annotationDefaultStack" />
+		</action>
+		</package>
+	-->
+</struts>

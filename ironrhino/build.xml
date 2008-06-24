@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ironrhino" default="compile" basedir=".">
+
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="webapp.dir" location="${basedir}/webapp" />
+	<property name="lib.dir" location="${basedir}/lib" />
+	<property name="classes.dir" location="${webapp.dir}/WEB-INF/classes" />
+	<property name="target.dir" location="${basedir}/target" />
+	<property name="test.dir" location="${basedir}/test" />
+	<property name="test.src.dir" location="${basedir}/test/src" />
+	<property name="test.classes.dir" location="${basedir}/test/classes" />
+	<property name="test.results.dir" location="${basedir}/test/results" />
+	<property name="jar.name" value="ironrhino.jar" />
+	<property name="core-jar.name" value="ironrhino-core.jar" />
+	<property name="war.name" value="ironrhino.war" />
+
+	<path id="lib.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${webapp.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${target.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${test.classes.dir}" />
+	</target>
+
+	<target name="compile">
+		<antcall target="clean" />
+		<antcall target="init" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<classpath refid="lib.classpath" />
+		</javac>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!--
+	<target name="init">
+			<mkdir dir="${target.dir}" />
+			<mkdir dir="${classes.dir}" />
+			<mkdir dir="${test.classes.dir}" />
+			<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+				<classpath>
+					<pathelement path="${lib.dir}/aspectjtools.jar" />
+				</classpath>
+			</taskdef>
+		</target>
+
+	<target name="compile" depends="init">
+		<antcall target="clean" />
+		<iajc sourceroots="${src.dir}" destdir="${classes.dir}" aspectpath="${lib.dir}/spring-aspects.jar" fork="true" forkclasspath="${lib.dir}/aspectjtools.jar" source="1.5">
+			<classpath refid="lib.classpath"/>
+		</iajc>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	
+		-->
+
+	<target name="test" depends="compile">
+		<mkdir dir="${test.classes.dir}" />
+		<javac srcdir="${test.src.dir}" destdir="${test.classes.dir}">
+			<classpath>
+				<path refid="lib.classpath" />
+				<pathelement location="${classes.dir}" />
+			</classpath>
+		</javac>
+		<copy todir="${test.classes.dir}">
+			<fileset dir="${test.src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<mkdir dir="${test.results.dir}" />
+		<junit haltonfailure="no" printsummary="on">
+			<classpath>
+				<path refid="lib.classpath" />
+				<pathelement location="${classes.dir}" />
+				<pathelement location="${test.classes.dir}" />
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<formatter type="plain" />
+			<formatter type="xml" />
+			<batchtest todir="${test.results.dir}">
+				<fileset dir="${test.classes.dir}" includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="jar">
+		<mkdir dir="${target.dir}" />
+		<delete file="${target.dir}/${jar.name}" />
+		<jar jarfile="${target.dir}/${jar.name}" basedir="${classes.dir}" includes="com/**,org/**" />
+		<delete file="${target.dir}/${core-jar.name}" />
+		<jar jarfile="${target.dir}/${core-jar.name}" basedir="${classes.dir}" includes="org/ironrhino/core/**,org/ironrhino/common/**" />
+	</target>
+
+	<target name="war">
+		<mkdir dir="${target.dir}" />
+		<war warfile="${target.dir}/${war.name}" basedir="${webapp.dir}" webxml="${webapp.dir}/WEB-INF/web.xml" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${test.classes.dir}" />
+		<delete dir="${target.dir}" />
+	</target>
+</project>
