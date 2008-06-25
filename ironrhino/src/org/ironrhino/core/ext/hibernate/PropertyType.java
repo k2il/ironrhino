@@ -5,7 +5,7 @@ import com.opensymphony.xwork2.util.LocalizedTextUtil;
 
 public enum PropertyType {
 
-	STRING, INTEGER, LONG, DOUBLE, DATE;
+	STRING, SHORT, INTEGER, LONG, FLOAT, DOUBLE, BIGDECIMAL, BOOLEAN, DATE;
 
 	public String getName() {
 		return this.name();

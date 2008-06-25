@@ -24,8 +24,10 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.ironrhino.common.model.ResultPage;
 import org.ironrhino.core.annotation.NaturalId;
+import org.ironrhino.core.ext.hibernate.CustomizableEntityChanger;
 import org.ironrhino.core.model.AbstractTreeableEntity;
 import org.ironrhino.core.model.BaseTreeableEntity;
+import org.ironrhino.core.model.Customizable;
 import org.ironrhino.core.model.Entity;
 import org.ironrhino.core.model.Treeable;
 import org.ironrhino.core.util.AnnotationUtils;
@@ -95,6 +97,10 @@ public class BaseManagerImpl<T extends Entity> implements BaseManager<T> {
 						+ "." + String.valueOf(entity.getId());
 			entity.setFullId(fullId);
 			entity.setLevel(fullId.split("\\.").length);
+		}
+		if (obj instanceof Customizable) {
+			CustomizableEntityChanger
+					.convertCustomPropertiesType((Customizable) obj);
 		}
 		session.saveOrUpdate(obj);
 	}

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,9 @@ import org.ironrhino.common.model.ResultPage;
 import org.ironrhino.core.annotation.FormElement;
 import org.ironrhino.core.annotation.NaturalId;
 import org.ironrhino.core.annotation.NotInCopy;
+import org.ironrhino.core.ext.hibernate.CustomizableEntityChanger;
+import org.ironrhino.core.ext.hibernate.PropertyType;
+import org.ironrhino.core.model.Customizable;
 import org.ironrhino.core.model.Entity;
 import org.ironrhino.core.service.BaseManager;
 import org.ironrhino.core.util.AnnotationUtils;
@@ -45,6 +49,8 @@ public class EntityAction extends BaseAction {
 
 	private BaseManager baseManager;
 
+	private CustomizableEntityChanger customizableEntityChanger;
+
 	private ResultPage resultPage;
 
 	private Entity entity;
@@ -59,6 +65,11 @@ public class EntityAction extends BaseAction {
 
 	public void setBaseManager(BaseManager baseManager) {
 		this.baseManager = baseManager;
+	}
+
+	public void setCustomizableEntityChanger(
+			CustomizableEntityChanger customizableEntityChanger) {
+		this.customizableEntityChanger = customizableEntityChanger;
 	}
 
 	public String list() {
@@ -170,8 +181,16 @@ public class EntityAction extends BaseAction {
 				Set<String> names = getFormElements().keySet();
 				if (naturalIdImmutable)
 					names.removeAll(naturalIds.keySet());
-				for (String name : names)
-					bwp.setPropertyValue(name, bw.getPropertyValue(name));
+				for (String name : names) {
+					if (!name.startsWith(Customizable.CUSTOM_COMPONENT_NAME))
+						bwp.setPropertyValue(name, bw.getPropertyValue(name));
+				}
+				if (persisted instanceof Customizable)
+					bwp
+							.setPropertyValue(
+									Customizable.CUSTOM_COMPONENT_NAME,
+									bw
+											.getPropertyValue(Customizable.CUSTOM_COMPONENT_NAME));
 				entity = persisted;
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -259,6 +278,7 @@ public class EntityAction extends BaseAction {
 			Map<String, FormElementConfig> map = new HashMap<String, FormElementConfig>();
 			PropertyDescriptor[] pds = org.springframework.beans.BeanUtils
 					.getPropertyDescriptors(clazz);
+
 			for (PropertyDescriptor pd : pds) {
 				if ("new".equals(pd.getName()) || "id".equals(pd.getName())
 						|| "class".equals(pd.getName())
@@ -298,7 +318,8 @@ public class EntityAction extends BaseAction {
 				} else if (returnType == Double.TYPE
 						|| returnType == Double.class
 						|| returnType == Float.TYPE
-						|| returnType == Float.class) {
+						|| returnType == Float.class
+						|| returnType == BigDecimal.class) {
 					fec.addCssClass("double");
 				} else if (Date.class.isAssignableFrom(returnType)) {
 					fec.addCssClass("date");
@@ -311,6 +332,34 @@ public class EntityAction extends BaseAction {
 				if (getNaturalIds().containsKey(pd.getName()))
 					fec.setRequired(true);
 				map.put(pd.getName(), fec);
+			}
+			boolean customizable = Customizable.class.isAssignableFrom(clazz);
+			if (customizable)
+				map.remove(Customizable.CUSTOM_COMPONENT_NAME);
+			Map<String, PropertyType> customProperties = customizableEntityChanger
+					.getCustomizedProperties(clazz.getName());
+			if (customProperties != null && customProperties.size() > 0) {
+				for (String name : customProperties.keySet()) {
+					PropertyType pt = customProperties.get(name);
+
+					FormElementConfig fec = new FormElementConfig();
+					if (pt == PropertyType.SHORT || pt == PropertyType.INTEGER
+							|| pt == PropertyType.LONG) {
+						fec.addCssClass("integer");
+					} else if (pt == PropertyType.FLOAT
+							|| pt == PropertyType.DOUBLE
+							|| pt == PropertyType.BIGDECIMAL) {
+						fec.addCssClass("double");
+					} else if (pt == PropertyType.DATE) {
+						fec.addCssClass("date");
+					} else if (pt == PropertyType.STRING
+							&& name.toLowerCase().contains("email")) {
+						fec.addCssClass("email");
+					} else if (pt == PropertyType.BOOLEAN)
+						fec.setType("checkbox");
+					map.put(Customizable.CUSTOM_COMPONENT_NAME + "." + name,
+							fec);
+				}
 			}
 			cache.put(key, map);
 		}

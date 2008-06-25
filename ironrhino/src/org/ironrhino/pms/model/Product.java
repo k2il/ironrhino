@@ -24,7 +24,6 @@ import org.ironrhino.core.annotation.NaturalId;
 import org.ironrhino.core.annotation.NotInCopy;
 import org.ironrhino.core.annotation.Publishable;
 import org.ironrhino.core.annotation.Recordable;
-import org.ironrhino.core.ext.hibernate.CustomizableEntityChanger;
 import org.ironrhino.core.model.BaseEntity;
 import org.ironrhino.core.model.Customizable;
 import org.ironrhino.core.model.Ordered;
@@ -378,7 +377,6 @@ public class Product extends BaseEntity implements Ordered, Secured,
 
 	public void setCustomProperties(Map<String, Serializable> customProperties) {
 		this.customProperties = customProperties;
-		CustomizableEntityChanger.convertCustomPropertiesType(this);
 	}
 
 }
