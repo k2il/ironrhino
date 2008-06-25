@@ -8,4 +8,5 @@ at browser side,it use jquery,jquery ui and jquery plugins ,it support ajax hist
 
 = Quick Start =
 svn checkout http://ironrhino.googlecode.com/svn/trunk/
-and read readme.txt
+
+this is a eclipse project include all jars,so checkout would take you some time.after checkout,please read readme.txt
