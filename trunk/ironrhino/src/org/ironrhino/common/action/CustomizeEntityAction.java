@@ -58,8 +58,8 @@ public class CustomizeEntityAction extends BaseAction {
 								.prepareChange(entityClassName,
 										new PropertyChange(name, true));
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			addActionError(e.getMessage());
 		}
 		return SUCCESS;
 	}
