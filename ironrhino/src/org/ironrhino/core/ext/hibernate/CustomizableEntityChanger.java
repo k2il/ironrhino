@@ -24,10 +24,11 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.type.Type;
 import org.ironrhino.common.util.DateUtils;
 import org.ironrhino.core.model.Customizable;
-import org.ironrhino.core.util.BeanUtils;
+import org.ironrhino.core.service.BaseManager;
 import org.ironrhino.core.util.XMLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,8 +72,10 @@ public class CustomizableEntityChanger {
 				if (o == null || !(o instanceof String[]))
 					continue;
 				String array[] = (String[]) o;
-				if (array.length == 0 || StringUtils.isBlank(array[0]))
+				if (array.length == 0 || StringUtils.isBlank(array[0])) {
+					customProperties.put(name, null);
 					continue;
+				}
 				String value = array[0].trim();
 				try {
 					if (PropertyType.DATE == map.get(name))
@@ -167,7 +170,9 @@ public class CustomizableEntityChanger {
 			changes.put(entityClass, list);
 		}
 
-		Component customProperties = getDynamicComponent(clazz);
+		// Component customProperties = getDynamicComponent(clazz);
+		Map<String, PropertyType> map = customizableEntities.get(clazz
+				.getName());
 		if (!change.isRemove()) {
 			PropertyChange pc = null;
 			for (PropertyChange temp : list)
@@ -180,22 +185,8 @@ public class CustomizableEntityChanger {
 					list.remove(pc);
 				return;
 			}
-			boolean exists = false;
-			if (BeanUtils.hasProperty(clazz, change.getName()))
-				exists = true;
-			if (!exists) {
-				Iterator propertyIterator = customProperties
-						.getPropertyIterator();
-				while (propertyIterator.hasNext()) {
-					Property property = (Property) propertyIterator.next();
-					if (property.getName().equals(change.getName())) {
-						exists = true;
-						break;
-					}
-				}
-			}
-			if (exists)
-				throw new IllegalArgumentException("Property '"
+			if (map.containsKey(change.getName()))
+				throw new IllegalArgumentException("customized property '"
 						+ change.getName() + "' already exists");
 			list.add(change);
 		} else {
@@ -213,17 +204,7 @@ public class CustomizableEntityChanger {
 				}
 				return;
 			}
-
-			boolean exists = false;
-			Iterator propertyIterator = customProperties.getPropertyIterator();
-			while (propertyIterator.hasNext()) {
-				Property property = (Property) propertyIterator.next();
-				if (property.getName().equals(change.getName())) {
-					exists = true;
-					break;
-				}
-			}
-			if (!exists)
+			if (!map.containsKey(change.getName()))
 				throw new IllegalArgumentException("Customized property '"
 						+ change.getName() + "' doesn't exists");
 			list.add(change);
@@ -250,6 +231,26 @@ public class CustomizableEntityChanger {
 	}
 
 	private Component getDynamicComponent(Class entityClass) {
+		PersistentClass pclass = getPersistentClass(entityClass);
+		Iterator<Property> it = pclass.getPropertyIterator();
+		boolean exists = false;
+		while (it.hasNext()) {
+			Property p = it.next();
+			if (p.getName().equals(Customizable.CUSTOM_COMPONENT_NAME)) {
+				exists = true;
+				break;
+			}
+		}
+		if (!exists) {
+			Component comp = new Component(pclass);
+			comp.setDynamic(true);
+			Property p = new Property();
+			p.setName(Customizable.CUSTOM_COMPONENT_NAME);
+			p.setPersistentClass(pclass);
+			p.setValue(comp);
+			pclass.addProperty(p);
+			return comp;
+		}
 		Property property = getPersistentClass(entityClass).getProperty(
 				Customizable.CUSTOM_COMPONENT_NAME);
 		return (Component) property.getValue();
@@ -268,23 +269,24 @@ public class CustomizableEntityChanger {
 		lsfb.afterPropertiesSet();
 		sf = (SessionFactory) lsfb.getObject();
 		resetSessionFactory(sf);
-		hibernateGpsDevice.setSessionFactory(sf);
-		if (hibernateGpsDevice != null)
+		if (hibernateGpsDevice != null){
+			hibernateGpsDevice.setSessionFactory(sf);
 			hibernateGpsDevice.start();
+		}
 	}
 
 	private void resetSessionFactory(SessionFactory sf) {
+		//TODO no hibernate session bound
 		for (String id : ctx.getBeanDefinitionNames()) {
 			if (!id.endsWith("Manager"))
 				continue;
 			Object bean = ctx.getBean(id);
-			try {
-				org.apache.commons.beanutils.BeanUtils.setProperty(bean,
-						"sessionFactory", sf);
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+			if (bean instanceof BaseManager) {
+				BaseManager m = (BaseManager) bean;
+				m.setSessionFactory(sf);
 			}
 		}
+		((HibernateTransactionManager)ctx.getBean("transactionManager")).setSessionFactory(sf);
 	}
 
 	private void updatePersistentClass() throws ClassNotFoundException {
@@ -312,7 +314,6 @@ public class CustomizableEntityChanger {
 						simpleValue.setTypeName(Boolean.class.getName());
 					else if (change.getType() == PropertyType.DATE)
 						simpleValue.setTypeName(Date.class.getName());
-					// add prefix to column name
 					PersistentClass persistentClass = getPersistentClass(clazz);
 					simpleValue.setTable(persistentClass.getTable());
 					Property property = new Property();
@@ -340,12 +341,25 @@ public class CustomizableEntityChanger {
 			try {
 				String file = ctx.getResource(getMappingResource(clazz))
 						.getFile().getAbsolutePath();
-
+				Node node = null;
 				Document document = XMLUtils.loadDocument(file);
 				NodeList componentTags = document
 						.getElementsByTagName("dynamic-component");
-				Node node = componentTags.item(0);
-				XMLUtils.removeChildren(node);
+				if (componentTags.getLength() == 0) {
+					Element element = document
+							.createElement("dynamic-component");
+					element.setAttribute("name",
+							Customizable.CUSTOM_COMPONENT_NAME);
+					element.setAttribute("insert", "true");
+					element.setAttribute("update", "true");
+					element.setAttribute("optimistic-lock", "true");
+					document.getElementsByTagName("class").item(0).appendChild(
+							element);
+					node = element;
+				} else {
+					node = componentTags.item(0);
+					XMLUtils.removeChildren(node);
+				}
 				Iterator propertyIterator = getDynamicComponent(clazz)
 						.getPropertyIterator();
 				while (propertyIterator.hasNext()) {
@@ -364,8 +378,10 @@ public class CustomizableEntityChanger {
 		Element element = document.createElement("property");
 		Type type = property.getType();
 		element.setAttribute("name", property.getName());
-		element.setAttribute("column", ((Column) property.getColumnIterator()
-				.next()).getName());
+		String name = ((Column) property.getColumnIterator().next()).getName();
+		if (!name.startsWith(Customizable.CUSTOM_COMPONENT_NAME + "_"))
+			name = Customizable.CUSTOM_COMPONENT_NAME + "_" + name;
+		element.setAttribute("column", name);
 		element.setAttribute("type", type.getReturnedClass().getName());
 		element.setAttribute("not-null", "false");
 		return element;

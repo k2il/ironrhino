@@ -272,6 +272,7 @@ public class EntityAction extends BaseAction {
 	public Map<String, FormElementConfig> getFormElements() {
 		Class clazz = getEntityClass();
 		String key = clazz.getName();
+		boolean customizable = Customizable.class.isAssignableFrom(clazz);
 		if (cache.get(key) == null) {
 			Set<String> notInCopies = AnnotationUtils
 					.getAnnotatedPropertyNames(clazz, NotInCopy.class);
@@ -333,7 +334,7 @@ public class EntityAction extends BaseAction {
 					fec.setRequired(true);
 				map.put(pd.getName(), fec);
 			}
-			boolean customizable = Customizable.class.isAssignableFrom(clazz);
+
 			if (customizable)
 				map.remove(Customizable.CUSTOM_COMPONENT_NAME);
 			Map<String, PropertyType> customProperties = customizableEntityChanger
@@ -361,6 +362,8 @@ public class EntityAction extends BaseAction {
 							fec);
 				}
 			}
+			if (customizable)
+				return map;
 			cache.put(key, map);
 		}
 		return cache.get(key);
@@ -432,7 +435,6 @@ public class EntityAction extends BaseAction {
 		public void setReadonly(boolean readonly) {
 			this.readonly = readonly;
 		}
-
 	}
 
 	// need call once before view

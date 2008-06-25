@@ -82,7 +82,7 @@ Observation.obs = function(){
 		</s:iterator>
 	</tbody>
 </table>
-<div>not persisted changes</div>
+
 <table id="changes" class="sortable">
 	<thead>
 		<tr>

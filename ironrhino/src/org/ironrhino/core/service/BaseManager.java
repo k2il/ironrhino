@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.LockMode;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.ironrhino.common.model.ResultPage;
@@ -15,6 +16,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 public interface BaseManager<T extends Entity> {
 
+	public void setSessionFactory(SessionFactory sessionFactory);
+	
 	public void setEntityClass(Class<? extends Entity> clazz);
 
 	public void save(T obj);
