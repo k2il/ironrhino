@@ -7,4 +7,5 @@ at server side,it built on springframework,struts2,hibernate,spring security(ace
 at browser side,it use jquery,jquery ui and jquery plugins ,it support ajax history,ajax form,ajax link,sortable table,tree view etc by just add some css class on elements.
 
 = Quick Start =
-svn checkout http://ironrhino.googlecode.com/svn/
+svn checkout http://ironrhino.googlecode.com/svn/trunk/
+and read readme.txt
