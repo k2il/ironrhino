@@ -1,6 +1,7 @@
 package org.ironrhino.core.ext.hibernate;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,17 +73,25 @@ public class CustomizableEntityChanger {
 				String array[] = (String[]) o;
 				if (array.length == 0 || StringUtils.isBlank(array[0]))
 					continue;
-				String value = array[0];
+				String value = array[0].trim();
 				try {
 					if (PropertyType.DATE == map.get(name))
 						customProperties
 								.put(name, DateUtils.parseDate10(value));
+					else if (PropertyType.BIGDECIMAL == map.get(name))
+						customProperties.put(name, new BigDecimal(value));
 					else if (PropertyType.DOUBLE == map.get(name))
 						customProperties.put(name, new Double(value));
+					else if (PropertyType.FLOAT == map.get(name))
+						customProperties.put(name, new Float(value));
 					else if (PropertyType.LONG == map.get(name))
 						customProperties.put(name, new Long(value));
 					else if (PropertyType.INTEGER == map.get(name))
 						customProperties.put(name, new Integer(value));
+					else if (PropertyType.SHORT == map.get(name))
+						customProperties.put(name, new Short(value));
+					else if (PropertyType.BOOLEAN == map.get(name))
+						customProperties.put(name, new Boolean(value));
 					else
 						customProperties.put(name, value);
 				} catch (Exception e) {
@@ -94,6 +103,10 @@ public class CustomizableEntityChanger {
 
 	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
+		initCustomizableEntities();
+	}
+
+	private void initCustomizableEntities() {
 		lsfb = (LocalSessionFactoryBean) ctx.getBean("&sessionFactory");
 		sf = (SessionFactory) lsfb.getObject();
 		customizableEntities = new HashMap<String, Map<String, PropertyType>>();
@@ -111,12 +124,20 @@ public class CustomizableEntityChanger {
 						Class t = p.getType().getReturnedClass();
 						if (Date.class.isAssignableFrom(t))
 							map.put(p.getName(), PropertyType.DATE);
+						else if (BigDecimal.class.isAssignableFrom(t))
+							map.put(p.getName(), PropertyType.BIGDECIMAL);
 						else if (Double.class.isAssignableFrom(t))
 							map.put(p.getName(), PropertyType.DOUBLE);
+						else if (Float.class.isAssignableFrom(t))
+							map.put(p.getName(), PropertyType.FLOAT);
 						else if (Long.class.isAssignableFrom(t))
 							map.put(p.getName(), PropertyType.LONG);
 						else if (Integer.class.isAssignableFrom(t))
 							map.put(p.getName(), PropertyType.INTEGER);
+						else if (Short.class.isAssignableFrom(t))
+							map.put(p.getName(), PropertyType.SHORT);
+						else if (Boolean.class.isAssignableFrom(t))
+							map.put(p.getName(), PropertyType.BOOLEAN);
 						else
 							map.put(p.getName(), PropertyType.STRING);
 					}
@@ -225,7 +246,7 @@ public class CustomizableEntityChanger {
 		}
 		changes.clear();
 		rebuildSessionFactory();
-
+		initCustomizableEntities();
 	}
 
 	private Component getDynamicComponent(Class entityClass) {
@@ -275,15 +296,23 @@ public class CustomizableEntityChanger {
 					simpleValue.addColumn(new Column(change.getName()));
 					if (change.getType() == PropertyType.STRING)
 						simpleValue.setTypeName(String.class.getName());
+					else if (change.getType() == PropertyType.SHORT)
+						simpleValue.setTypeName(Short.class.getName());
 					else if (change.getType() == PropertyType.INTEGER)
 						simpleValue.setTypeName(Integer.class.getName());
-					if (change.getType() == PropertyType.LONG)
+					else if (change.getType() == PropertyType.LONG)
 						simpleValue.setTypeName(Long.class.getName());
-					if (change.getType() == PropertyType.DOUBLE)
+					else if (change.getType() == PropertyType.FLOAT)
+						simpleValue.setTypeName(Float.class.getName());
+					else if (change.getType() == PropertyType.DOUBLE)
 						simpleValue.setTypeName(Double.class.getName());
-					if (change.getType() == PropertyType.DATE)
+					else if (change.getType() == PropertyType.BIGDECIMAL)
+						simpleValue.setTypeName(BigDecimal.class.getName());
+					else if (change.getType() == PropertyType.BOOLEAN)
+						simpleValue.setTypeName(Boolean.class.getName());
+					else if (change.getType() == PropertyType.DATE)
 						simpleValue.setTypeName(Date.class.getName());
-
+					// add prefix to column name
 					PersistentClass persistentClass = getPersistentClass(clazz);
 					simpleValue.setTable(persistentClass.getTable());
 					Property property = new Property();

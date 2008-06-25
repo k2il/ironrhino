@@ -19,7 +19,7 @@
 	rel="stylesheet" type="text/css" />
 <link rel="stylesheet"
 	href="<c:url value="/themes/flora/flora.all.css"/>" type="text/css"
-	media="screen">
+	media="screen" />
 <!--[if IE]>
 	<link href="<c:url value="/styles/ie.css"/>" media="all"
 		rel="stylesheet" type="text/css" />
@@ -68,6 +68,7 @@
 		<li><a href="<c:url value="/backend/control_panel"/>">控制面板</a></li>
 		<li><a href="<c:url value="/backend/security_config"/>">安全配置</a></li>
 		<li><a href="<c:url value="/backend/common/setting"/>">参数设置</a></li>
+		<li><a href="<c:url value="/backend/common/customize_entity"/>">属性定制</a></li>
 	</ul>
 	</li>
 	<li><a href="<c:url value="/backend/common/region"/>">区域管理</a></li>
