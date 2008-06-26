@@ -7,6 +7,10 @@ at server side,it built on springframework,struts2,hibernate,spring security(ace
 at browser side,it use jquery,jquery ui and jquery plugins ,it support ajax history,ajax form,ajax link,sortable table,tree view etc by just add some css class on elements.
 
 = Quick Start =
-svn checkout http://ironrhino.googlecode.com/svn/trunk/
+First of all, you can get the source code by using svn checkout at the following location: 
 
-this is a eclipse project include all jars,so checkout would take you some time.after checkout,please read readme.txt
+*http://ironrhino.googlecode.com/svn/trunk/
+
+This is an eclipse project including all jars, so checkout will take a while - so grab a cup of coffee ;)
+
+After finishing checkout,please read the instruction at /docs/install.txt
