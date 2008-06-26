@@ -5,22 +5,23 @@ import java.util.Map;
 
 import org.ironrhino.common.support.TemplateProvider;
 import org.ironrhino.core.jms.MessageProducer;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.SimpleMailMessage;
-
 
 import freemarker.template.Template;
 
-/**
- * send asynchronized mail
- * 
- * @author zym
- * 
- */
 public class MailService {
 
 	private TemplateProvider templateProvider;
 
 	private MessageProducer messageProducer;
+
+	private MailSender mailSender;
+
+	@Required
+	public void setMailSender(MailSender mailSender) {
+		this.mailSender = mailSender;
+	}
 
 	public void setMessageProducer(MessageProducer messageProducer) {
 		this.messageProducer = messageProducer;
@@ -35,8 +36,14 @@ public class MailService {
 	}
 
 	public void send(SimpleMailMessage smm, boolean useHtmlFormat) {
-		messageProducer
-				.produce(new SimpleMailMessageWrapper(smm, useHtmlFormat));
+		if (messageProducer != null) {
+			// asynchronized
+			messageProducer.produce(new SimpleMailMessageWrapper(smm,
+					useHtmlFormat));
+		} else {
+			// synchronized
+			mailSender.send(smm, useHtmlFormat);
+		}
 	}
 
 	public void send(SimpleMailMessage smm, String templateName, Map model) {
@@ -54,8 +61,12 @@ public class MailService {
 			e.printStackTrace();
 		}
 		smm.setText(writer.toString());
-		messageProducer
-				.produce(new SimpleMailMessageWrapper(smm, useHtmlFormat));
+		if (messageProducer != null) {
+			messageProducer.produce(new SimpleMailMessageWrapper(smm,
+					useHtmlFormat));
+		} else {
+			mailSender.send(smm, useHtmlFormat);
+		}
 	}
 
 }
