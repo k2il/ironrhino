@@ -16,8 +16,5 @@
 		<property name="intValue" />
 		<property name="doubleValue" />
 		<property name="dateValue" />
-		<dynamic-component name="customProperties" insert="true"
-			update="true" optimistic-lock="true">
-		</dynamic-component>
 	</class>
 </hibernate-mapping>

@@ -14,8 +14,9 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.compass.gps.device.hibernate.HibernateGpsDevice;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.Component;
 import org.hibernate.mapping.PersistentClass;
@@ -24,11 +25,9 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.type.Type;
 import org.ironrhino.common.util.DateUtils;
 import org.ironrhino.core.model.Customizable;
-import org.ironrhino.core.service.BaseManager;
 import org.ironrhino.core.util.XMLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -170,7 +169,6 @@ public class CustomizableEntityChanger {
 			changes.put(entityClass, list);
 		}
 
-		// Component customProperties = getDynamicComponent(clazz);
 		Map<String, PropertyType> map = customizableEntities.get(clazz
 				.getName());
 		if (!change.isRemove()) {
@@ -219,14 +217,11 @@ public class CustomizableEntityChanger {
 	public synchronized void applyChanges() throws Exception {
 		if (changes.isEmpty())
 			return;
-		try {
-			updatePersistentClass();
-			updateMappingFile();
-		} catch (ClassNotFoundException e) {
-			log.error(e.getMessage(), e);
-		}
+		updatePersistentClass();
+		updateMappingFile();
+		updateSessionFactory();
+		lsfb.updateDatabaseSchema();
 		changes.clear();
-		rebuildSessionFactory();
 		initCustomizableEntities();
 	}
 
@@ -260,42 +255,20 @@ public class CustomizableEntityChanger {
 		return lsfb.getConfiguration().getClassMapping(entityClass.getName());
 	}
 
-	private void rebuildSessionFactory() throws Exception {
-		sf.close();
-		HibernateGpsDevice hibernateGpsDevice = (HibernateGpsDevice) ctx
-				.getBean("hibernateGpsDevice");
-		if (hibernateGpsDevice != null)
-			hibernateGpsDevice.stop();
-		lsfb.afterPropertiesSet();
-		sf = (SessionFactory) lsfb.getObject();
-		resetSessionFactory(sf);
-		if (hibernateGpsDevice != null){
-			hibernateGpsDevice.setSessionFactory(sf);
-			hibernateGpsDevice.start();
+	private void updateSessionFactory() {
+		Configuration conf = lsfb.getConfiguration();
+		for (String entityClass : changes.keySet()) {
+			((SessionFactoryImpl) sf).updatePersistentClass(conf
+					.getClassMapping(entityClass), conf.getMapping());
 		}
 	}
 
-	private void resetSessionFactory(SessionFactory sf) {
-		//TODO no hibernate session bound
-		for (String id : ctx.getBeanDefinitionNames()) {
-			if (!id.endsWith("Manager"))
-				continue;
-			Object bean = ctx.getBean(id);
-			if (bean instanceof BaseManager) {
-				BaseManager m = (BaseManager) bean;
-				m.setSessionFactory(sf);
-			}
-		}
-		((HibernateTransactionManager)ctx.getBean("transactionManager")).setSessionFactory(sf);
-	}
-
-	private void updatePersistentClass() throws ClassNotFoundException {
+	private void updatePersistentClass() throws Exception {
 		for (String entityClass : changes.keySet()) {
 			Class clazz = Class.forName(entityClass);
 			for (PropertyChange change : changes.get(entityClass)) {
 				if (!change.isRemove()) {
 					SimpleValue simpleValue = new SimpleValue();
-					simpleValue.addColumn(new Column(change.getName()));
 					if (change.getType() == PropertyType.STRING)
 						simpleValue.setTypeName(String.class.getName());
 					else if (change.getType() == PropertyType.SHORT)
@@ -316,8 +289,12 @@ public class CustomizableEntityChanger {
 						simpleValue.setTypeName(Date.class.getName());
 					PersistentClass persistentClass = getPersistentClass(clazz);
 					simpleValue.setTable(persistentClass.getTable());
+					Column c = new Column();
+					c.setName(Customizable.CUSTOM_COMPONENT_NAME+"_"+change.getName());
+					simpleValue.addColumn(c);
 					Property property = new Property();
 					property.setName(change.getName());
+					property.setPersistentClass(persistentClass);
 					property.setValue(simpleValue);
 					getDynamicComponent(clazz).addProperty(property);
 				} else {
@@ -335,10 +312,9 @@ public class CustomizableEntityChanger {
 
 	}
 
-	private void updateMappingFile() throws ClassNotFoundException {
+	private void updateMappingFile() throws Exception {
 		for (String entityClass : changes.keySet()) {
 			Class clazz = Class.forName(entityClass);
-			try {
 				String file = ctx.getResource(getMappingResource(clazz))
 						.getFile().getAbsolutePath();
 				Node node = null;
@@ -368,9 +344,7 @@ public class CustomizableEntityChanger {
 					node.appendChild(element);
 				}
 				XMLUtils.saveDocument(document, file);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				lsfb.getConfiguration().updateMapping(entityClass,ctx.getResource(getMappingResource(clazz)).getURL());
 		}
 	}
 

@@ -57,20 +57,6 @@ Indicator = {
 	}
 }
 
-if (typeof dwr != 'undefined') {
-	dwr.engine.setPreHook(Indicator.show);
-	dwr.engine.setPostHook(Indicator.hide);
-}
-$().ajaxStart(function() {
-	Indicator.show()
-});
-$().ajaxError(function() {
-	Indicator.showError()
-});
-$().ajaxSuccess(function() {
-	Indicator.hide()
-});
-
 function getMessage(message, className) {
 	return '<div class="'
 			+ className
@@ -508,6 +494,19 @@ Observation.common = function(container) {
 }
 
 Initialization.common = function() {
+	if (typeof dwr != 'undefined') {
+		dwr.engine.setPreHook(Indicator.show);
+		dwr.engine.setPostHook(Indicator.hide);
+	}
+	$().ajaxStart(function() {
+		Indicator.show()
+	});
+	$().ajaxError(function() {
+		Indicator.showError()
+	});
+	$().ajaxSuccess(function() {
+		Indicator.hide()
+	});
 	if ($('#login_url').length > 0)
 		$('#login_url').click(login);
 	if ($('#q').length > 0)

@@ -3,6 +3,7 @@
 	xmlns:amq="http://activemq.apache.org/schema/core"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+<!--
 	<amq:broker useJmx="false" persistent="true"
 		brokerName="localhost">
 		<amq:persistenceAdapter>
@@ -62,4 +63,5 @@
 		<property name="destination" ref="destination" />
 		<property name="messageListener" ref="messageListener" />
 	</bean>
+	-->
 </beans>

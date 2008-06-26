@@ -233,7 +233,7 @@ public class EntityAction extends BaseAction {
 				for (Object obj : list)
 					baseManager.delete((Entity) obj);
 				addActionMessage(getText("delete.success",
-						"delete  successfully"));
+						"delete  successfully",new String[]{""}));
 			}
 		}
 		return SUCCESS;
