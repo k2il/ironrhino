@@ -231,6 +231,7 @@ public class BaseManagerImpl<T extends Entity> implements BaseManager<T> {
 		}
 		resultPage.setResult(getBetweenListByCriteria(resultPage
 				.getDetachedCriteria(), start, end));
+		resultPage.setStart(start);
 		return resultPage;
 	}
 

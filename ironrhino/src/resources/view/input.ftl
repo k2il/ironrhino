@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<head>
+<title>ironrhino</title>
+<link rel="stylesheet" href="${request.contextPath}/themes/ui.datepicker.css"
+	type="text/css" media="screen" />
+<script type="text/javascript"
+	src="${request.contextPath}/scripts/ui.datepicker.js"></script>
+<script type="text/javascript"
+	src="${request.contextPath}/scripts/ui.datepicker-zh-CN.js"></script>
+</head>
+<body>
+<@s.form action="save" method="post" cssClass="ajax">
+	<@s.hidden name="${entityName}.id" />
+	<#list naturalIds?keys as name>
+		<#assign config=formElements[name]>
+		<@s.textfield label="${name}" name="${entityName}.${name}" 
+		readonly="${(naturalIdsImmatuable&&!action.isNew())?string}"
+		 cssClass="${config.cssClass}" 
+		 size="${(config.size>0)?string(config.size,20)}"/>
+	</#list>
+
+	<#list formElements?keys as key>
+		<#if !naturalIds?keys?seq_contains(key)>
+			<#assign config=formElements[key]>
+			<#if config.type=='input'>
+				<@s.textfield label="${key}" name="${entityName}.${key}"
+					readonly="config.readonly" cssClass="${config.cssClass}"
+					size="${(config.size>0)?string(config.size,20)}" />
+			</#if>
+			<#if config.type=='textarea'>
+				<@s.textarea label="${key}" name="${entityName}.${key}"
+					readonly="${config.readonly?string}" cssClass="${config.cssClass}"
+					cols="50" rows="10" />
+			</#if>
+			<#if config.type=='checkbox'>
+				<@s.checkbox label="${key}" name="${entityName}.${key}"
+					cssClass="${config.cssClass}" />
+			</#if>
+			<#if config.type=='select'>
+				<@s.select label="${key}" name="${entityName}.${key}"
+					list="${config.enumValues}" listKey="name" listValue="displayName" />
+			</#if>
+		</#if>
+	</#list>
+	<@s.submit value="Save" />
+</@s.form>
+</body>
+</html>
