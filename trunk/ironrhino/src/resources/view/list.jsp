@@ -32,7 +32,7 @@
 		</c:forEach>
 		<c:forEach items="${formElements}" var="var">
 			<c:if test="${!fn:contains(naturalIds,var.key)}">
-				<c:if test="${var.value.type=='input'}">
+				<c:if test="${var.value.type=='input'||var.value.type=='textarea'}">
 					<c:if test="${var.value.readonly}">
 						<ec:column property="${var.key}"
 							cellName="${entityName}.${var.key}" />

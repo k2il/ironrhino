@@ -1,9 +1,6 @@
 package org.ironrhino.core.ext.struts;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -59,20 +54,6 @@ public class AutoConfigPackageProvider implements PackageProvider {
 
 	private ObjectFactory objectFactory;
 
-	private String pageLocation = "/WEB-INF/view/jsp";
-
-	private ServletContext context;
-
-	@Inject
-	public void setContext(ServletContext context) {
-		this.context = context;
-	}
-
-	@Inject(value = "ironrhino.autoconfig.page.location", required = false)
-	public void setPageLocation(String val) {
-		this.pageLocation = val;
-	}
-
 	@Inject("ironrhino.autoconfig.packages")
 	public void setPackages(String val) {
 		this.packages = val;
@@ -116,8 +97,23 @@ public class AutoConfigPackageProvider implements PackageProvider {
 				Map<String, ActionConfig> actionConfigs = new LinkedHashMap<String, ActionConfig>(
 						pc.getActionConfigs());
 				for (String key : config.getActionConfigs().keySet()) {
-					if (actionConfigs.containsKey(key))
+					if (actionConfigs.containsKey(key)) {
+						ActionConfig ac = actionConfigs.get(key);
+						Map<String, ResultConfig> results = new HashMap<String, ResultConfig>();
+						results.putAll(config.getActionConfigs().get(key)
+								.getResults());
+						results.putAll(ac.getResults());
+						// this is a trick
+						try {
+							Field field = ActionConfig.class
+									.getDeclaredField("results");
+							field.setAccessible(true);
+							field.set(ac, results);
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
 						continue;
+					}
 					actionConfigs.put(key, config.getActionConfigs().get(key));
 				}
 				// this is a trick
@@ -132,35 +128,7 @@ public class AutoConfigPackageProvider implements PackageProvider {
 			}
 
 		}
-		copyDefaultView();
 		initialized = true;
-	}
-
-	private void copyDefaultView() {
-		for (String result : "list,input".split(",")) {
-			String location = pageLocation + baseNamespace + "/" + result
-					+ ".jsp";
-			try {
-				InputStream is = getClass().getResourceAsStream(
-						"/resources/view/" + result + ".jsp");
-				if (is == null)
-					continue;
-				URL url = context.getResource(location);
-				if (url == null) {
-					FileOutputStream os = new FileOutputStream(context
-							.getRealPath(location));
-					byte[] buffer = new byte[1024];
-					int n = 0;
-					while (-1 != (n = is.read(buffer)))
-						os.write(buffer, 0, n);
-					is.close();
-					os.close();
-				}
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-
 	}
 
 	protected void processEntityClass(Class cls) {
