@@ -74,7 +74,7 @@ public class AutoConfigResult extends FreemarkerResult {
 			}
 		}
 		if (url == null)
-			location = freemarkerPageLocation + "/" + result + ".ftl";
+			location = freemarkerPageLocation + baseNamespace + "/" + result + ".ftl";
 		return location;
 	}
 }
