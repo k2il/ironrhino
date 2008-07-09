@@ -21,13 +21,6 @@ public class AutoConfigResult extends FreemarkerResult {
 
 	private String freemarkerPageLocation = "/resources/view";
 
-	private String baseNamespace = "";
-
-	@Inject(value = "ironrhino.autoconfig.base.namespace", required = false)
-	public void setBaseNamespace(String val) {
-		this.baseNamespace = val;
-	}
-
 	@Inject(value = "ironrhino.autoconfig.page.location", required = false)
 	public void setPageLocation(String val) {
 		this.pageLocation = val;
@@ -63,10 +56,10 @@ public class AutoConfigResult extends FreemarkerResult {
 					+ invocation.getProxy().getNamespace() + "/"
 					+ invocation.getProxy().getActionName() + "_" + result
 					+ ".ftl";
-			url = ClassLoaderUtil.getResource(location, AutoConfigResult.class);
+			url = ClassLoaderUtil.getResource(location.substring(1), AutoConfigResult.class);
 		}
 		if (url == null) {
-			location = pageLocation + baseNamespace + "/" + result + ".jsp";
+			location = pageLocation + "/" + result + ".jsp";
 			try {
 				url = context.getResource(location);
 			} catch (MalformedURLException e) {
@@ -74,7 +67,7 @@ public class AutoConfigResult extends FreemarkerResult {
 			}
 		}
 		if (url == null)
-			location = freemarkerPageLocation + baseNamespace + "/" + result + ".ftl";
+			location = freemarkerPageLocation + "/" + result + ".ftl";
 		return location;
 	}
 }
