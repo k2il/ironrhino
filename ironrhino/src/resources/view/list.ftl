@@ -54,7 +54,7 @@
 	<select onblur="ECSideUtil.updateCell(this,'select')"
 			style="width: 100%;" name="${entityName}.${key}">
 			<#list formElements[key].enumValues as en>
-			<option value="${en.name}">${en.displayName}</option>
+			<option value="${en}">${en}</option>
 			</#list>
 	</select>
 	</textarea>
