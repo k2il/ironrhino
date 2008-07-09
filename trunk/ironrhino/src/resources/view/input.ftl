@@ -39,7 +39,7 @@
 			</#if>
 			<#if config.type=='select'>
 				<@s.select label="${key}" name="${entityName}.${key}"
-					list="${config.enumValues}" listKey="name" listValue="displayName" />
+					list="@${config.enumClass}@values()" listKey="name" listValue="displayName" />
 			</#if>
 		</#if>
 	</#list>

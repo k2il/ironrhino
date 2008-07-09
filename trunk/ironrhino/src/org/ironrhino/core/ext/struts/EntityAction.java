@@ -293,6 +293,7 @@ public class EntityAction extends BaseAction {
 						Method method = pd.getReadMethod().getReturnType()
 								.getMethod("values", new Class[0]);
 						fes.setEnumValues((Enum[]) method.invoke(null));
+						fes.setEnumClass(returnType.getName());
 						fes.setType("select");
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
@@ -374,6 +375,7 @@ public class EntityAction extends BaseAction {
 	public static class FormElementConfig {
 		private String type = FormElement.DEFAULT_TYPE;
 		private int size;
+		private String enumClass;
 		private Enum[] enumValues;
 		private String cssClass = "";
 		private boolean readonly;
@@ -401,6 +403,14 @@ public class EntityAction extends BaseAction {
 
 		public int getSize() {
 			return size;
+		}
+
+		public String getEnumClass() {
+			return enumClass;
+		}
+
+		public void setEnumClass(String enumClass) {
+			this.enumClass = enumClass;
 		}
 
 		public void setSize(int size) {
