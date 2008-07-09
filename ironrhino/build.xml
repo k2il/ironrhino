@@ -12,6 +12,7 @@
 	<property name="test.results.dir" location="${basedir}/test/results" />
 	<property name="jar.name" value="ironrhino.jar" />
 	<property name="core-jar.name" value="ironrhino-core.jar" />
+	<property name="ums-jar.name" value="ironrhino-ums.jar" />
 	<property name="war.name" value="ironrhino.war" />
 
 	<path id="lib.classpath">
@@ -102,7 +103,10 @@
 		<delete file="${target.dir}/${jar.name}" />
 		<jar jarfile="${target.dir}/${jar.name}" basedir="${classes.dir}" includes="com/**,org/**" />
 		<delete file="${target.dir}/${core-jar.name}" />
-		<jar jarfile="${target.dir}/${core-jar.name}" basedir="${classes.dir}" includes="org/ironrhino/core/**,org/ironrhino/common/**" />
+		<jar jarfile="${target.dir}/${core-jar.name}" basedir="${classes.dir}" 
+		includes="org/ironrhino/core/**,org/ironrhino/common/**,resources/struts/struts-ironrhino-default.xml,resources/hibernate/common/**,resources/view/*.ftl,resources/view/backend/common/*.ftl" />
+		<jar jarfile="${target.dir}/${ums-jar.name}" basedir="${classes.dir}" 
+		includes="org/ironrhino/ums/**,resources/struts/struts-ums.xml,resources/hibernate/ums/**,resources/view/backend/ums/*.ftl,resources/spring/applicationContext-service-ums.xml" />
 	</target>
 
 	<target name="war">
