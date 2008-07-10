@@ -17,7 +17,7 @@ import org.ironrhino.core.ext.struts.BaseAction;
 import org.ironrhino.online.model.Account;
 import org.ironrhino.online.service.AccountManager;
 
-@AutoConfig(namespace = "/backend/online")
+@AutoConfig
 public class AccountAction extends BaseAction {
 
 	private Account account;

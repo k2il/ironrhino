@@ -11,7 +11,7 @@ import org.ironrhino.online.model.Order;
 import org.ironrhino.online.model.OrderStatus;
 import org.ironrhino.online.service.OrderManager;
 
-@AutoConfig(namespace = "/backend/online")
+@AutoConfig
 public class OrderAction extends BaseAction {
 
 	private OrderManager orderManager;
