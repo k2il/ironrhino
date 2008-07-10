@@ -10,7 +10,7 @@ import org.ironrhino.core.ext.struts.BaseAction;
 
 import com.opensymphony.xwork2.util.CreateIfNull;
 
-@AutoConfig(namespace = "/backend/common")
+@AutoConfig
 public class CustomizeEntityAction extends BaseAction {
 
 	private CustomizableEntityChanger customizableEntityChanger;

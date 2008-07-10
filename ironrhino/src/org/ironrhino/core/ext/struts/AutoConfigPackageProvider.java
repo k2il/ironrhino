@@ -277,14 +277,8 @@ public class AutoConfigPackageProvider implements PackageProvider {
 		if (Entity.class.isAssignableFrom(cls)) {
 			actionName = StringUtils.uncapitalize(cls.getSimpleName());
 			namespace = ac.namespace();
-			if (StringUtils.isBlank(namespace)) {
+			if (StringUtils.isBlank(namespace))
 				namespace = defaultNamespace;
-				String p = cls.getPackage().getName();
-				p = p.substring(0, p.length() - ".model".length());
-				p = p.substring(p.lastIndexOf('.') + 1);
-				if (!namespace.endsWith(p))
-					namespace = namespace + "/" + p;
-			}
 			Class action = ac.action();
 			if (action.equals(Object.class)) {
 				actionClass = cls.getName().replace("model", "action")

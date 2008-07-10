@@ -15,7 +15,8 @@
 	<constant name="struts.url.includeParams" value="none" />
 	<constant name="struts.custom.i18n.resources" value="resources.i18n.messages" />
 	<constant name="struts.i18n.encoding" value="UTF-8" />
-	<constant name="ironrhino.autoconfig.packages" value="/backend:org.ironrhino" />
+	<constant name="ironrhino.autoconfig.packages"
+		value="/backend/common:org.ironrhino.common;/backend/ums:org.ironrhino.ums;/backend/pms:org.ironrhino.pms;/backend/online:org.ironrhino.online" />
 	<package name="ironrhino-default" extends="struts-default">
 		<result-types>
 			<result-type name="autoConfig"
@@ -39,7 +40,7 @@
 				<interceptor-ref name="conversionError" />
 				<interceptor-ref name="annotationWorkflow" />
 				<interceptor-ref name="validation">
-					<param name="validateAnnotatedMethodOnly"> true </param>
+					<param name="validateAnnotatedMethodOnly">true</param>
 				</interceptor-ref>
 				<interceptor-ref name="workflow" />
 			</interceptor-stack>
