@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.util.CreateIfNull;
 @Recordable
 @Publishable
 @Searchable(alias = "product")
-@AutoConfig(results = { "list", "input", "attribute", "picture", "category" }, fileupload = "image/pjpeg,image/jpeg")
+@AutoConfig( fileupload = "image/pjpeg,image/jpeg")
 public class Product extends BaseEntity implements Ordered, Secured,
 		Customizable {
 

@@ -19,7 +19,7 @@ import org.ironrhino.core.model.Secured;
 @Recordable
 @Publishable
 @Searchable(root = false, alias = "category")
-@AutoConfig(results = { "list", "input", "tree" })
+@AutoConfig
 public class Category extends BaseTreeableEntity<Category> implements Secured {
 	@NaturalId
 	@SearchableProperty

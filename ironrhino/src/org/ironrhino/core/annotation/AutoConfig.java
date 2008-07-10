@@ -14,8 +14,6 @@ public @interface AutoConfig {
 
 	Class action() default Object.class;
 
-	String[] results() default {};
-
 	String fileupload() default "";
 
 }
