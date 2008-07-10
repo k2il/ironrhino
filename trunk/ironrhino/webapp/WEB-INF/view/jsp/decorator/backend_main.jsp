@@ -66,10 +66,10 @@
 <ul class="nav">
 	<li><a>系统配置</a>
 	<ul>
-		<li><a href="<c:url value="/backend/control_panel"/>">控制面板</a></li>
-		<li><a href="<c:url value="/backend/security_config"/>">安全配置</a></li>
+		<li><a href="<c:url value="/backend/controlPanel"/>">控制面板</a></li>
+		<li><a href="<c:url value="/backend/securityConfig"/>">安全配置</a></li>
 		<li><a href="<c:url value="/backend/common/setting"/>">参数设置</a></li>
-		<li><a href="<c:url value="/backend/common/customize_entity"/>">属性定制</a></li>
+		<li><a href="<c:url value="/backend/common/customizeEntity"/>">属性定制</a></li>
 	</ul>
 	</li>
 	<li><a href="<c:url value="/backend/common/region"/>">区域管理</a></li>
@@ -88,12 +88,12 @@
 	</li>
 	<li><a href="<c:url value="/backend/online/account"/>">帐号管理</a></li>
 	<authz:authorize ifAllGranted="ROLE_SUPERVISOR">
-		<li><a href="<c:url  value="/backend/switch_user"/>">切换用户</a></li>
+		<li><a href="<c:url  value="/backend/switchUser"/>">切换用户</a></li>
 	</authz:authorize>
 	<authz:authorize ifAllGranted="ROLE_PREVIOUS_ADMINISTRATOR">
 		<li><a href="<c:url  value="/backend/exit"/>">退出用户</a></li>
 	</authz:authorize>
-	<li><a href="<c:url value="/backend/change_password"/>">修改密码</a></li>
+	<li><a href="<c:url value="/backend/changePassword"/>">修改密码</a></li>
 	<li><a href="<c:url value="/backend/logout"/>">注销</a></li>
 </ul>
 </div>

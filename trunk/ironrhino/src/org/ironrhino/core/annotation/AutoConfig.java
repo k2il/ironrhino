@@ -12,8 +12,10 @@ public @interface AutoConfig {
 
 	String namespace() default "";
 
+	Class action() default Object.class;
+
 	String[] results() default {};
-	
+
 	String fileupload() default "";
 
 }

@@ -5,13 +5,14 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.ironrhino.common.model.ResultPage;
+import org.ironrhino.core.annotation.AutoConfig;
+import org.ironrhino.core.ext.struts.BaseAction;
 import org.ironrhino.online.model.Order;
 import org.ironrhino.online.model.OrderStatus;
 import org.ironrhino.online.service.OrderManager;
 
-import com.opensymphony.xwork2.ActionSupport;
-
-public class OrderAction extends ActionSupport {
+@AutoConfig(namespace = "/backend/online")
+public class OrderAction extends BaseAction {
 
 	private OrderManager orderManager;
 
