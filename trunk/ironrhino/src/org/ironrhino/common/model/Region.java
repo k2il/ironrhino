@@ -12,7 +12,7 @@ import org.ironrhino.core.model.BaseTreeableEntity;
 import org.ironrhino.core.model.Secured;
 
 @Publishable
-@AutoConfig(results = { "list", "input", "map" })
+@AutoConfig
 public class Region extends BaseTreeableEntity<Region> implements Secured {
 
 	private Set<SimpleElement> roles = new HashSet<SimpleElement>(0);
