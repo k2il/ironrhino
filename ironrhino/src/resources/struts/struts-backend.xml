@@ -4,42 +4,16 @@
 <struts>
 	<package name="backend" namespace="/backend" extends="ironrhino-default">
 		<action name="index">
-			<result type="freemarker"> /resources/view/backend/index.ftl</result>
+			<result type="autoConfig" />
 		</action>
-		<action name="change_password" class="org.ironrhino.ums.action.ChangePasswordAction">
-			<result name="input" type="freemarker">
-				/resources/view/backend/change_password.ftl</result>
+		<action name="switchUser">
+			<result type="autoConfig" />
 		</action>
-		<action name="switch_user">
-			<result type="freemarker">/resources/view/backend/switch_user.ftl
-			</result>
+		<action name="securityConfig">
+			<result type="autoConfig" />
 		</action>
-		<action name="security_config">
-			<result type="freemarker"> /resources/view/backend/security_config.ftl
-			</result>
-		</action>
-		<action name="control_panel">
-			<result type="freemarker">/resources/view/backend/control_panel.ftl
-			</result>
-		</action>
-	</package>
-	<package name="backend_common" namespace="/backend/common"
-		extends="ironrhino-default">
-		<action name="customize_entity"
-			class="org.ironrhino.common.action.CustomizeEntityAction">
-			<result name="success" type="freemarker">
-				/resources/view/backend/common/customize_entity.ftl</result>
-		</action>
-	</package>
-	<package name="backend_online" namespace="/backend/online"
-		extends="ironrhino-default">
-		<action name="account"
-			class="org.ironrhino.online.action.backend.AccountAction">
-			<result name="success" type="redirectAction"> account</result>
-			<result name="list">
-				/WEB-INF/view/jsp/backend/online/account_list.jsp</result>
-			<result name="view">
-				/WEB-INF/view/jsp/backend/online/account_view.jsp</result>
+		<action name="controlPanel">
+			<result type="autoConfig" />
 		</action>
 	</package>
 </struts>

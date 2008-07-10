@@ -3,6 +3,7 @@
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ironrhino.common.util.AuthzUtils;
+import org.ironrhino.core.annotation.AutoConfig;
 import org.ironrhino.core.annotation.PostMethod;
 import org.ironrhino.core.ext.struts.BaseAction;
 import org.ironrhino.ums.model.User;
@@ -15,6 +16,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
 @Validation
+@AutoConfig(namespace="/backend")
 public class ChangePasswordAction extends BaseAction {
 
 	protected Log log = LogFactory.getLog(getClass());
@@ -67,6 +69,6 @@ public class ChangePasswordAction extends BaseAction {
 		log.info("'" + user.getUsername() + "' changed password");
 		userManager.save(user);
 		addActionMessage(getText("change.password.successfully"));
-		return SUCCESS;
+		return INPUT;
 	}
 }

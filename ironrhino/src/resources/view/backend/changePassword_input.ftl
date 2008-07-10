@@ -4,7 +4,7 @@
 <title>Change Password</title>
 </head>
 <body>
-<@s.form action="change_password" method="post" cssClass="ajax">
+<@s.form method="post" cssClass="ajax">
 	<@s.password label="%{getText('currentPassword')}"
 		name="currentPassword" cssClass="required" />
 	<@s.password label="%{getText('password')}" name="password"

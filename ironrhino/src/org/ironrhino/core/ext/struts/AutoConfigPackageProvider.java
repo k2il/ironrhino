@@ -1,6 +1,7 @@
 package org.ironrhino.core.ext.struts;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.dispatcher.ServletActionRedirectResult;
 import org.ironrhino.core.annotation.AutoConfig;
 import org.ironrhino.core.model.Entity;
 import org.ironrhino.core.util.ClassScaner;
@@ -40,11 +40,9 @@ public class AutoConfigPackageProvider implements PackageProvider {
 
 	private String parentPackage = "ironrhino-default";
 
-	private String baseNamespace = "";
-
 	private String defaultActionClass = EntityAction.class.getName();
 
-	private String packages;
+	private Map<String, Set<String>> packages = new HashMap<String, Set<String>>();
 
 	private Configuration configuration;
 
@@ -56,17 +54,31 @@ public class AutoConfigPackageProvider implements PackageProvider {
 
 	@Inject("ironrhino.autoconfig.packages")
 	public void setPackages(String val) {
-		this.packages = val;
+		if (StringUtils.isNotBlank(val)) {
+			String[] array = val.split(";");
+			for (String s : array) {
+				String[] arr = s.split(":");
+				String defaultNamespace = "";
+				String packs;
+				if (arr.length == 1) {
+					packs = arr[0];
+				} else {
+					defaultNamespace = arr[0];
+					packs = arr[1];
+				}
+				Set<String> set = packages.get(defaultNamespace);
+				if (set == null) {
+					set = new HashSet<String>();
+					packages.put(defaultNamespace, set);
+				}
+				set.addAll(Arrays.asList(packs.split(",")));
+			}
+		}
 	}
 
 	@Inject(value = "ironrhino.autoconfig.parent.package", required = false)
 	public void setParentPackage(String val) {
 		this.parentPackage = val;
-	}
-
-	@Inject(value = "ironrhino.autoconfig.base.namespace", required = false)
-	public void setBaseNamespace(String val) {
-		this.baseNamespace = val;
 	}
 
 	@Inject
@@ -79,61 +91,65 @@ public class AutoConfigPackageProvider implements PackageProvider {
 	}
 
 	public void loadPackages() throws ConfigurationException {
-		if (StringUtils.isBlank(packages))
+		if (packages.size() == 0)
 			return;
-		Set<Class> entityClasses = ClassScaner.scan(packages.split(","),
-				AutoConfig.class);
-		if (entityClasses.size() == 0)
-			return;
-		packageLoader = new PackageLoader();
-		for (Class clazz : entityClasses) {
-			processEntityClass(clazz);
-		}
-		for (PackageConfig config : packageLoader.createPackageConfigs()) {
-			PackageConfig pc = configuration.getPackageConfig(config.getName());
-			if (pc == null) {
-				configuration.addPackageConfig(config.getName(), config);
-			} else {
-				Map<String, ActionConfig> actionConfigs = new LinkedHashMap<String, ActionConfig>(
-						pc.getActionConfigs());
-				for (String key : config.getActionConfigs().keySet()) {
-					if (actionConfigs.containsKey(key)) {
-						ActionConfig ac = actionConfigs.get(key);
-						Map<String, ResultConfig> results = new HashMap<String, ResultConfig>();
-						results.putAll(config.getActionConfigs().get(key)
-								.getResults());
-						results.putAll(ac.getResults());
-						// this is a trick
-						try {
-							Field field = ActionConfig.class
-									.getDeclaredField("results");
-							field.setAccessible(true);
-							field.set(ac, results);
-						} catch (Exception e) {
-							log.error(e.getMessage(), e);
-						}
-						continue;
-					}
-					actionConfigs.put(key, config.getActionConfigs().get(key));
-				}
-				// this is a trick
-				try {
-					Field field = PackageConfig.class
-							.getDeclaredField("actionConfigs");
-					field.setAccessible(true);
-					field.set(pc, actionConfigs);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
+		for (String defaultNamespace : packages.keySet()) {
+			Set<Class> entityClasses = ClassScaner.scan(packages.get(
+					defaultNamespace).toArray(new String[0]), AutoConfig.class);
+			if (entityClasses.size() == 0)
+				return;
+			packageLoader = new PackageLoader();
+			for (Class clazz : entityClasses) {
+				processEntityClass(clazz, defaultNamespace);
 			}
+			for (PackageConfig config : packageLoader.createPackageConfigs()) {
+				PackageConfig pc = configuration.getPackageConfig(config
+						.getName());
+				if (pc == null) {
+					configuration.addPackageConfig(config.getName(), config);
+				} else {
+					Map<String, ActionConfig> actionConfigs = new LinkedHashMap<String, ActionConfig>(
+							pc.getActionConfigs());
+					for (String key : config.getActionConfigs().keySet()) {
+						if (actionConfigs.containsKey(key)) {
+							ActionConfig ac = actionConfigs.get(key);
+							Map<String, ResultConfig> results = new HashMap<String, ResultConfig>();
+							results.putAll(config.getActionConfigs().get(key)
+									.getResults());
+							results.putAll(ac.getResults());
+							// this is a trick
+							try {
+								Field field = ActionConfig.class
+										.getDeclaredField("results");
+								field.setAccessible(true);
+								field.set(ac, results);
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
+							}
+							continue;
+						}
+						actionConfigs.put(key, config.getActionConfigs().get(
+								key));
+					}
+					// this is a trick
+					try {
+						Field field = PackageConfig.class
+								.getDeclaredField("actionConfigs");
+						field.setAccessible(true);
+						field.set(pc, actionConfigs);
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
+				}
 
+			}
 		}
 		initialized = true;
 	}
 
-	protected void processEntityClass(Class cls) {
+	protected void processEntityClass(Class cls, String defaultNamespace) {
 		AutoConfig ac = (AutoConfig) cls.getAnnotation(AutoConfig.class);
-		String[] arr = getNamespaceAndActionName(cls);
+		String[] arr = getNamespaceAndActionName(cls, defaultNamespace);
 		String namespace = arr[0];
 		String actionName = arr[1];
 		String actionClass = arr[2];
@@ -141,14 +157,10 @@ public class AutoConfigPackageProvider implements PackageProvider {
 		packageName = packageName.replace('/', '_');
 		PackageConfig.Builder pkgConfig = loadPackageConfig(packageName);
 
-		ResultConfig successResult = new ResultConfig.Builder("success",
-				ServletActionRedirectResult.class.getName()).addParam(
-				"actionName", actionName).build();
 		ResultConfig autoCofigResult = new ResultConfig.Builder("*",
 				AutoConfigResult.class.getName()).build();
 		ActionConfig.Builder builder = new ActionConfig.Builder(packageName,
-				actionName, actionClass).addResultConfig(successResult)
-				.addResultConfig(autoCofigResult);
+				actionName, actionClass).addResultConfig(autoCofigResult);
 		if (StringUtils.isNotBlank(ac.fileupload())) {
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("allowedTypes", ac.fileupload());
@@ -257,7 +269,7 @@ public class AutoConfigPackageProvider implements PackageProvider {
 
 	private Map<String, Class> entityClassURLMapping = new ConcurrentHashMap<String, Class>();
 
-	public String[] getNamespaceAndActionName(Class cls) {
+	public String[] getNamespaceAndActionName(Class cls, String defaultNamespace) {
 		String actionName = null;
 		String namespace = null;
 		String actionClass = null;
@@ -266,27 +278,33 @@ public class AutoConfigPackageProvider implements PackageProvider {
 			actionName = StringUtils.uncapitalize(cls.getSimpleName());
 			namespace = ac.namespace();
 			if (StringUtils.isBlank(namespace)) {
+				namespace = defaultNamespace;
 				String p = cls.getPackage().getName();
 				p = p.substring(0, p.length() - ".model".length());
-				namespace = baseNamespace + "/"
-						+ p.substring(p.lastIndexOf('.') + 1);
+				p = p.substring(p.lastIndexOf('.') + 1);
+				if (!namespace.endsWith(p))
+					namespace = namespace + "/" + p;
 			}
-			actionClass = cls.getName().replace("model", "action") + "Action";
-			if (!ClassUtils.isPresent(actionClass))
-				actionClass = defaultActionClass;
+			Class action = ac.action();
+			if (action.equals(Object.class)) {
+				actionClass = cls.getName().replace("model", "action")
+						+ "Action";
+				if (!ClassUtils.isPresent(actionClass))
+					actionClass = defaultActionClass;
+			} else {
+				actionClass = action.getName();
+			}
+
 			entityClassURLMapping.put(namespace + "/" + actionName, cls);
 		} else if (Action.class.isAssignableFrom(cls)) {
 			actionName = StringUtils.uncapitalize(cls.getSimpleName());
+			if (actionName.endsWith("Action"))
+				actionName = actionName.substring(0, actionName.length() - 6);
 			actionClass = cls.getName();
 			namespace = ac.namespace();
-			if (StringUtils.isBlank(namespace)) {
-				String p = cls.getPackage().getName();
-				p = p.substring(0, p.length() - ".action".length());
-				namespace = baseNamespace + "/"
-						+ p.substring(p.lastIndexOf('.') + 1);
-			}
+			if (StringUtils.isBlank(namespace))
+				namespace = defaultNamespace;
 		}
-
 		return new String[] { namespace, actionName, actionClass };
 	}
 
