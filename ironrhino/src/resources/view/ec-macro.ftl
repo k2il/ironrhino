@@ -111,9 +111,9 @@
 	</td>
 	<td class="separatorTool" >&#160;</td>
 	<#if resultPage?exists>
-	<td class="statusTool" >共${resultPage.totalRecord}条记录,显示${resultPage.start+1}到${resultPage.start+resultPage.result?size}</td>
+	<td class="statusTool" >共${resultPage.totalRecord}条记录<#if resultPage.totalRecord!=0>,显示${resultPage.start+1}到${resultPage.start+resultPage.result?size}</#if></td>
 	<#else>
-	<td class="statusTool" >共${Request.totalRows}条记录,显示1到${Request.totalRows}</td>	
+	<td class="statusTool" >共${Request.totalRows}条记录<#if Request.totalRows!=0>,显示1到${Request.totalRows}</#if></td>	
 	</#if>
 	</tr>
 	</table></div>
