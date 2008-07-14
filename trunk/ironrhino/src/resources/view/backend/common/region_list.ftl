@@ -5,7 +5,7 @@
 <title>List Regions</title>
 </head>
 <body>
-<#assign config={"name":{"cellEdit":"input"},"displayOrder":{"cellEdit":"input"},"rolesAsString":{"cellEdit":"input","class":"include_if_edited"}}>
+<#assign config={"name":{"cellEdit":"input"},"displayOrder":{"cellEdit":"input"},"rolesAsString":{"trimPrefix":true,"cellEdit":"input","class":"include_if_edited"}}>
 <@ectable entityName="region" config=config actionColumnButtons='<button type="button" onclick="ECSideX.enter(\'#id\')">进入</button><button type="button" onclick="ECSideX.save(\'#id\')">保存</button><button type="button" onclick="ECSideX.del(\'#id\')">删除</button>'/>
 </body>
 </html>

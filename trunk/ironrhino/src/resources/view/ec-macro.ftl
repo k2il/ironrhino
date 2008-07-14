@@ -151,12 +151,13 @@
 <#assign index=index+1>
 <@ectbodytrstart recordKey="${entity.id}" odd=(index%2==1)/>
 	<#list config?keys as name>
+		<#assign cellName=(config[name]["trimPrefix"]?exists?string('',entityName+'.'))+name>
 		<#if config[name]["cellEdit"]?exists>
 		<#assign edit=config[name]["cellEdit"]?split(",")>
-		<#call ectbodytd cellName="${entityName}.${name}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"
+		<#call ectbodytd cellName="${cellName}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"
 		 cellEdit="${edit[0]}" cellEditTemplate="${edit[1]?if_exists}" cellEditAction="${edit[2]?if_exists}" class="${config[name]['class']?if_exists}"/>
 		<#else>
-		<#call ectbodytd cellName="${entityName}.${name}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"  class="${config[name]['class']?if_exists}"/>
+		<#call ectbodytd cellName="${cellName}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"  class="${config[name]['class']?if_exists}"/>
 		</#if>
 	</#list>
 <@ectbodytrend  recordKey="${entity.id}" width="${actionColumnWidth}" buttons="${actionColumnButtons}"/>
