@@ -157,7 +157,8 @@ public class UserAction extends BaseAction {
 		if (user != null && user.getId() != null) {
 			user = userManager.get(user.getId());
 			if (user != null) {
-				if (StringUtils.isNotBlank(password))
+				if (StringUtils.isNotBlank(password)
+						&& !password.equals("********"))
 					user.setLegiblePassword(password);
 				if (rolesAsString != null)
 					user.setRolesAsString(rolesAsString);

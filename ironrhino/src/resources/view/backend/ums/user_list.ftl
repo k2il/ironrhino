@@ -5,7 +5,7 @@
 <title>List Users</title>
 </head>
 <body>
-<#assign config={"username":{},"name":{},"email":{},"password":{"value":"********","cellEdit":"input,ec_edit_template_password"},"rolesAsString":{"cellEdit":"input","class":"include_if_edited"},"groupsAsString":{"cellEdit":"input","class":"include_if_edited"}}>
+<#assign config={"username":{},"name":{},"email":{},"password":{"value":"********","trimPrefix":true,"cellEdit":"input,ec_edit_template_password","class":"include_if_edited"},"rolesAsString":{"trimPrefix":true,"cellEdit":"input","class":"include_if_edited"},"groupsAsString":{"trimPrefix":true,"cellEdit":"input","class":"include_if_edited"}}>
 <@ectable entityName="user" config=config/>
 <div style="display: none;">
 <textarea id="ec_edit_template_password">

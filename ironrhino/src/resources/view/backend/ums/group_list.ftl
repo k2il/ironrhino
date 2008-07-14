@@ -5,7 +5,7 @@
 <title>List Groups</title>
 </head>
 <body>
-<#assign config={"name":{},"enabled":{"cellEdit":"select,select_template_boolean"},"description":{"cellEdit":"input"},"rolesAsString":{"cellEdit":"input","class":"include_if_edited"}}>
+<#assign config={"name":{},"enabled":{"cellEdit":"select,select_template_boolean"},"description":{"cellEdit":"input"},"rolesAsString":{"trimPrefix":true,"cellEdit":"input","class":"include_if_edited"}}>
 <@ectable entityName="group" config=config/>
 </body>
 </html>
