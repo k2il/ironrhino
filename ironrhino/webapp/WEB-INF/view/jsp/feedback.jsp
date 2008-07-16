@@ -21,12 +21,7 @@
 		name="feedback.content" />
 	<authz:authorize ifNotGranted="ROLE_BUILTIN_ACCOUNT">
 		<s:textfield label="%{getText('captcha')}" name="captcha" size="6"
-			cssClass="autocomplete_off required">
-			<s:param name="after">
-				<img class="captcha" src="<s:url value="/captcha.jpg" />"
-					alt="loading" />
-			</s:param>
-		</s:textfield>
+			cssClass="autocomplete_off required captcha"/>
 	</authz:authorize>
 	<s:submit value="submit" />
 </s:form>

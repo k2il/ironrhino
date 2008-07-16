@@ -490,7 +490,14 @@ Observation.common = function(container) {
 		$('input.date', container).datepicker({
 			dateFormat : 'yy-mm-dd'
 		});
-	$('.captcha', container).click(refreshCaptcha);
+	$('input.captcha', container).click(function() {
+		if($(this).attr('_captcha_'))
+			return;
+		$(this).after('<img class="captcha" src="'+CONTEXT_PATH+'/captcha.jpg" alt="click to refresh"/>');
+		$('img.captcha', container).click(refreshCaptcha);
+		$(this).attr('_captcha_',true);
+	});
+
 }
 
 Initialization.common = function() {
