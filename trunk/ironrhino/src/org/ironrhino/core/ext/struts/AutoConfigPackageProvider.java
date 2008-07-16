@@ -153,8 +153,13 @@ public class AutoConfigPackageProvider implements PackageProvider {
 		String namespace = arr[0];
 		String actionName = arr[1];
 		String actionClass = arr[2];
-		String packageName = namespace.substring(1);
-		packageName = packageName.replace('/', '_');
+		String packageName;
+		if (!"".equals(namespace)) {
+			packageName = namespace.substring(1);
+			packageName = packageName.replace('/', '_');
+		} else {
+			packageName = "default";
+		}
 		PackageConfig.Builder pkgConfig = loadPackageConfig(packageName);
 
 		ResultConfig autoCofigResult = new ResultConfig.Builder("*",
@@ -179,7 +184,11 @@ public class AutoConfigPackageProvider implements PackageProvider {
 	}
 
 	protected PackageConfig.Builder loadPackageConfig(String packageName) {
-		String namespace = "/" + packageName.replace('_', '/');
+		String namespace;
+		if (packageName.equals("default"))
+			namespace = "/";
+		else
+			namespace = "/" + packageName.replace('_', '/');
 		PackageConfig.Builder pkgConfig = packageLoader.getPackage(packageName);
 		if (pkgConfig == null) {
 			pkgConfig = new PackageConfig.Builder(packageName);
@@ -303,6 +312,8 @@ public class AutoConfigPackageProvider implements PackageProvider {
 	}
 
 	public Class getEntityClass(String namespace, String actionName) {
+		if (namespace.endsWith("/"))
+			namespace = "";
 		return entityClassURLMapping.get(namespace + "/" + actionName);
 	}
 
