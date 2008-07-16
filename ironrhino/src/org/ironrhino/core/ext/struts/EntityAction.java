@@ -33,7 +33,6 @@ import org.ironrhino.core.model.Customizable;
 import org.ironrhino.core.model.Entity;
 import org.ironrhino.core.service.BaseManager;
 import org.ironrhino.core.util.AnnotationUtils;
-import org.ironrhino.pms.model.Product;
 import org.springframework.beans.BeanWrapperImpl;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -77,7 +76,7 @@ public class EntityAction extends BaseAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		DetachedCriteria dc = baseManager.detachedCriteria();
 		if (resultPage == null)
-			resultPage = new ResultPage<Product>();
+			resultPage = new ResultPage();
 		resultPage.setDetachedCriteria(dc);
 		int totalRows = baseManager.countResultPage(resultPage);
 		String pageSize = request.getParameter("ec_rd");
@@ -233,7 +232,7 @@ public class EntityAction extends BaseAction {
 				for (Object obj : list)
 					baseManager.delete((Entity) obj);
 				addActionMessage(getText("delete.success",
-						"delete  successfully",new String[]{""}));
+						"delete  successfully", new String[] { "" }));
 			}
 		}
 		return SUCCESS;
@@ -336,35 +335,37 @@ public class EntityAction extends BaseAction {
 				map.put(pd.getName(), fec);
 			}
 
-			if (customizable)
+			if (customizable) {
 				map.remove(Customizable.CUSTOM_COMPONENT_NAME);
-			Map<String, PropertyType> customProperties = customizableEntityChanger
-					.getCustomizedProperties(clazz.getName());
-			if (customProperties != null && customProperties.size() > 0) {
-				for (String name : customProperties.keySet()) {
-					PropertyType pt = customProperties.get(name);
+				Map<String, PropertyType> customProperties = customizableEntityChanger
+						.getCustomizedProperties(clazz.getName());
+				if (customProperties != null && customProperties.size() > 0) {
+					for (String name : customProperties.keySet()) {
+						PropertyType pt = customProperties.get(name);
 
-					FormElementConfig fec = new FormElementConfig();
-					if (pt == PropertyType.SHORT || pt == PropertyType.INTEGER
-							|| pt == PropertyType.LONG) {
-						fec.addCssClass("integer");
-					} else if (pt == PropertyType.FLOAT
-							|| pt == PropertyType.DOUBLE
-							|| pt == PropertyType.BIGDECIMAL) {
-						fec.addCssClass("double");
-					} else if (pt == PropertyType.DATE) {
-						fec.addCssClass("date");
-					} else if (pt == PropertyType.STRING
-							&& name.toLowerCase().contains("email")) {
-						fec.addCssClass("email");
-					} else if (pt == PropertyType.BOOLEAN)
-						fec.setType("checkbox");
-					map.put(Customizable.CUSTOM_COMPONENT_NAME + "." + name,
-							fec);
+						FormElementConfig fec = new FormElementConfig();
+						if (pt == PropertyType.SHORT
+								|| pt == PropertyType.INTEGER
+								|| pt == PropertyType.LONG) {
+							fec.addCssClass("integer");
+						} else if (pt == PropertyType.FLOAT
+								|| pt == PropertyType.DOUBLE
+								|| pt == PropertyType.BIGDECIMAL) {
+							fec.addCssClass("double");
+						} else if (pt == PropertyType.DATE) {
+							fec.addCssClass("date");
+						} else if (pt == PropertyType.STRING
+								&& name.toLowerCase().contains("email")) {
+							fec.addCssClass("email");
+						} else if (pt == PropertyType.BOOLEAN)
+							fec.setType("checkbox");
+						map
+								.put(Customizable.CUSTOM_COMPONENT_NAME + "."
+										+ name, fec);
+					}
 				}
-			}
-			if (customizable)
 				return map;
+			}
 			cache.put(key, map);
 		}
 		return cache.get(key);
