@@ -101,14 +101,11 @@
 		name="comment.content" cols="50" rows="4" />
 	<authz:authorize ifNotGranted="ROLE_BUILTIN_ACCOUNT">
 		<s:textfield label="%{getText('captcha')}" name="captcha" size="6"
-			cssClass="autocomplete_off required" />
+			cssClass="autocomplete_off required captcha" />
 	</authz:authorize>
 	<s:submit value="submit" />
 </s:form>
-<authz:authorize ifNotGranted="ROLE_BUILTIN_ACCOUNT">
-	<div><img class="captcha" src="<s:url value="/captcha.jpg" />"
-		alt="loading" /></div>
-</authz:authorize>
+
 
 <s:form action="product!send" namespace="/" method="post"
 	cssClass="ajax reset">
@@ -121,7 +118,7 @@
 		size="50" />
 	<authz:authorize ifNotGranted="ROLE_BUILTIN_ACCOUNT">
 		<s:textfield label="%{getText('captcha')}" name="captcha" size="6"
-			cssClass="autocomplete_off required" />
+			cssClass="autocomplete_off required captcha" />
 	</authz:authorize>
 	<s:submit value="submit" />
 </s:form>

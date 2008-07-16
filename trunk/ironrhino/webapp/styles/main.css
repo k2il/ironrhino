@@ -312,6 +312,10 @@ img {
 	cursor: move;
 }
 
+img.captcha {
+	cursor: pointer;
+}
+
 .clear {
 	clear: both;
 }
