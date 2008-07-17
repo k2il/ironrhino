@@ -54,11 +54,12 @@ public class AutoConfigResult extends FreemarkerResult {
 
 	protected String conditionalParse(String param, ActionInvocation invocation) {
 		String result = invocation.getResultCode();
-		String location = pageLocation
-				+ invocation.getProxy().getNamespace()
-				+ "/"
-				+ getTemplateName(invocation.getProxy().getActionName(), result)
-				+ ".jsp";
+		String namespace = invocation.getProxy().getNamespace();
+		String actionName = invocation.getProxy().getActionName();
+		if (namespace.equals("/"))
+			namespace = "";
+		String location = pageLocation + namespace + "/"
+				+ getTemplateName(actionName, result) + ".jsp";
 		ServletContext context = ServletActionContext.getServletContext();
 		URL url = null;
 		try {
@@ -67,11 +68,8 @@ public class AutoConfigResult extends FreemarkerResult {
 			e.printStackTrace();
 		}
 		if (url == null) {
-			location = freemarkerPageLocation
-					+ invocation.getProxy().getNamespace()
-					+ "/"
-					+ getTemplateName(invocation.getProxy().getActionName(),
-							result) + ".ftl";
+			location = freemarkerPageLocation + namespace + "/"
+					+ getTemplateName(actionName, result) + ".ftl";
 			url = ClassLoaderUtil.getResource(location.substring(1),
 					AutoConfigResult.class);
 		}
