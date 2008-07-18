@@ -150,6 +150,7 @@ public class UserAction extends BaseAction {
 			BeanUtils.copyProperties(temp, user);
 		}
 		userManager.save(user);
+		addActionMessage(getText("save.success"));
 		return SUCCESS;
 	}
 
