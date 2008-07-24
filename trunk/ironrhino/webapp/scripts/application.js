@@ -158,10 +158,6 @@ function handleResponse(data, options) {
 		div.remove();
 		fire(target, 'onsuccess');
 	} else {
-		if (data['_target_url_']) {
-			top.location.href = data['_target_url_'];
-			return;
-		}
 		window._jsonResult_ = data;
 		if (data.fieldErrors || data.actionErrors) {
 			hasError = true;
@@ -511,8 +507,13 @@ Initialization.common = function() {
 	$().ajaxError(function() {
 		Indicator.showError()
 	});
-	$().ajaxSuccess(function() {
-		Indicator.hide()
+	$().ajaxSuccess(function(ev,xhr) {
+		Indicator.hide();
+		var url = xhr.getResponseHeader("X-Redirect-To");
+		if (url) {
+			top.location.href = url;
+			return;
+		}
 	});
 	if ($('#login_url').length > 0)
 		$('#login_url').click(login);
