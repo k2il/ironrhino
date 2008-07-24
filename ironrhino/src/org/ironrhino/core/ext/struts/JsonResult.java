@@ -113,7 +113,8 @@ public class JsonResult implements Result {
 				}
 				targetUrl = ServletActionContext.getResponse()
 						.encodeRedirectURL(targetUrl);
-				map.put("_target_url_", targetUrl);
+				ServletActionContext.getResponse().setHeader("X-Redirect-To",
+						targetUrl);
 			} else {
 				if (annotation == null || annotation.propertyName() == null
 						|| annotation.propertyName().length == 0) {
