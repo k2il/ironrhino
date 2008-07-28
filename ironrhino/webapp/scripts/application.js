@@ -486,7 +486,7 @@ Observation.common = function(container) {
 		$('input.date', container).datepicker({
 			dateFormat : 'yy-mm-dd'
 		});
-	$('input.captcha', container).click(function() {
+	$('input.captcha', container).focus(function() {
 		if($(this).attr('_captcha_'))
 			return;
 		$(this).after('<img class="captcha" src="'+CONTEXT_PATH+'/captcha.jpg" alt="click to refresh"/>');
