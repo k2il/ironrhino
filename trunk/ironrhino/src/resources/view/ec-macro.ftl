@@ -1,4 +1,4 @@
-<#macro ecstart action="" includeCheckbox=true>
+<#macro ecstart action="" readonly="false">
 <form id="ec"  action="${action}"  method="post"  canResizeColWidth="true"  maxRowsExported="30000"  minColWidth="35"  style="visibility :hidden;" >
 <div class="eXtremeTable"  id="ec_main_content"  style="width:100%;" >
 <!-- ECS_AJAX_ZONE_PREFIX__begin_ ec_ECS_AJAX_ZONE_SUFFIX -->
@@ -24,28 +24,31 @@
 	<thead id="ec_table_head" >
 
 	<tr>
-		<#if includeCheckbox>
-		<td class="nosort"  width="22px" ><input type="checkbox"  title="全选/全消"  class="checkbox"  onclick="ECSideUtil.checkAll('ec','deleteFlag',this)" /></td>
+		<#if readonly=="false">
+		<td class="nosort"  width="22px"><input type="checkbox" class="checkbox"/></td>
 		</#if>
 </#macro>
 <#macro ectheadtd name editable=true>
 <td class="tableHeader <#if editable>editableColumn</#if>" ><span class="resizeTitle">${name}</span>
 <span class="resizeBar"  onmousedown="ECSideUtil.StartResize(event,this,'ec');" onmouseup="ECSideUtil.EndResize(event);"></span></td>
 </#macro>
-<#macro ecmiddle width="200px">
+<#macro ecmiddle width="200px" readonly="false">
+<#if readonly=="false">
 <td class="nosort"  width="${width}" >Action</td>
+</#if>
 	</tr>
 	</thead>
 	<tbody id="ec_table_body" >
 </#macro>
-<#macro ectbodytrstart recordKey,odd,includeCheckbox=true>
+<#macro ectbodytrstart recordKey,odd,readonly="false">
 <tr class="${odd?string("odd","even")}"  onclick="ECSideUtil.selectRow('ec',this);"  onmouseover="ECSideUtil.lightRow('ec',this);"  onmouseout="ECSideUtil.unlightRow('ec',this);"    recordKey="${recordKey}" >
-		<#if includeCheckbox><td width="22px"><input type="checkbox"  name="deleteFlag"  value="1"  class="checkbox"/></td></#if>
+		<#if readonly=="false"><td width="22px"><input type="checkbox"  name="deleteFlag"  value="1"  class="checkbox"/></td></#if>
 </#macro>
 <#macro ectbodytd cellName,value,cellEdit="",cellEditTemplate="ec_edit_template_input",cellEditAction="ondblclick",class="">
 <td <#if class!="">class="${class}"</#if> <#if cellEdit!="">${(cellEditAction!="")?string(cellEditAction,"ondblclick")}="ECSideUtil.editCell(this,'${cellEdit}','${(cellEditTemplate!="")?string(cellEditTemplate,"ec_edit_template_input")}')"</#if>  cellName="${cellName}" >${value}</td>
 </#macro>
-<#macro ectbodytrend recordKey width="200px" buttons="">
+<#macro ectbodytrend recordKey width="200px" buttons="" readonly="false">
+<#if readonly=="false">
 <td class="include_if_edited"  width="${width}"  cellName="action"   >
 			<#if buttons!="">
 			${buttons?replace("#id",recordKey)}
@@ -55,9 +58,10 @@
 			<button type="button" onclick="ECSideX.del('${recordKey}')">删除</button>
 			</#if>
 		</td>
+</#if>
 </tr>
 </#macro>
-<#macro ecend buttons="">
+<#macro ecend buttons=""  readonly="false">
 	</tbody>
 
 </table><iframe style="border:0px;" marginwidth="0" marginheight="0" frameborder="0" border="0" width="0" height="0" id="ec_ecs_export_iframe" name="ec_ecs_export_iframe" ></iframe>
@@ -96,6 +100,7 @@
 	<td class="exportTool"></td>
 	<td class="separatorTool"></td>
 	</#if>
+	<#if readonly=="false">
 	<td class="extendTool" >
 		<div style="text-align: center; width: 100%; padding: 3px"
 			class="eXtremeTable">
@@ -109,6 +114,7 @@
 			</#if>
 		</div>
 	</td>
+	</#if>
 	<td class="separatorTool" >&#160;</td>
 	<#if resultPage?exists>
 	<td class="statusTool" >共${resultPage.totalRecord}条记录<#if resultPage.totalRecord!=0>,显示${resultPage.start+1}到${resultPage.start+resultPage.result?size}</#if></td>
@@ -120,6 +126,7 @@
 <!-- ECS_AJAX_ZONE_PREFIX_ _end_ec_ECS_AJAX_ZONE_SUFFIX -->
 </div>
 </form>
+<#if readonly=="false">
 <div style="display: none;"><textarea
 	id="ec_edit_template_input">
 	<input type="text" class="inputtext" value=""
@@ -134,14 +141,15 @@
 </select>
 </textarea>
 </div>
+</#if>
 </#macro>
 
-<#macro ectable config entityName actionColumnWidth="200px" actionColumnButtons="" bottomButtons="">
-<@ecstart action="${entityName}"/>
+<#macro ectable config entityName actionColumnWidth="200px" actionColumnButtons="" bottomButtons="" readonly=false>
+<@ecstart action="${entityName}" readonly="${readonly?string}"/>
 	<#list config?keys as name>
-		<#call ectheadtd name="${name}" editable=(config[name]["cellEdit"]?exists)/>
+		<#call ectheadtd name="${name}" editable=(!readonly)&&(config[name]["cellEdit"]?exists)/>
 	</#list>
-<@ecmiddle width="${actionColumnWidth}"/>
+<@ecmiddle width="${actionColumnWidth}" readonly="${readonly?string}"/>
 <#assign index=0>
 <#assign list=Request.recordList>
 <#if !(list?exists)>
@@ -149,10 +157,10 @@
 </#if>
 <#list list as entity>
 <#assign index=index+1>
-<@ectbodytrstart recordKey="${entity.id}" odd=(index%2==1)/>
+<@ectbodytrstart recordKey="${entity.id}" odd=(index%2==1)   readonly="${readonly?string}"/>
 	<#list config?keys as name>
 		<#assign cellName=(config[name]["trimPrefix"]?exists?string('',entityName+'.'))+name>
-		<#if config[name]["cellEdit"]?exists>
+		<#if (!readonly)&&config[name]["cellEdit"]?exists>
 		<#assign edit=config[name]["cellEdit"]?split(",")>
 		<#call ectbodytd cellName="${cellName}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"
 		 cellEdit="${edit[0]}" cellEditTemplate="${edit[1]?if_exists}" cellEditAction="${edit[2]?if_exists}" class="${config[name]['class']?if_exists}"/>
@@ -160,8 +168,8 @@
 		<#call ectbodytd cellName="${cellName}" value="${config[name]['value']?exists?string(config[name]['value']?if_exists,entity[name]?if_exists?string)}"  class="${config[name]['class']?if_exists}"/>
 		</#if>
 	</#list>
-<@ectbodytrend  recordKey="${entity.id}" width="${actionColumnWidth}" buttons="${actionColumnButtons}"/>
+	<@ectbodytrend  recordKey="${entity.id}" width="${actionColumnWidth}" buttons="${actionColumnButtons}" readonly="${readonly?string}"/>
 </#list>
-<@ecend buttons="${bottomButtons}"/>
+<@ecend buttons="${bottomButtons}"  readonly="${readonly?string}"/>
 </#macro>
 

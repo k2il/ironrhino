@@ -15,5 +15,7 @@ public @interface AutoConfig {
 	Class action() default Object.class;
 
 	String fileupload() default "";
+	
+	boolean readonly() default false;
 
 }
