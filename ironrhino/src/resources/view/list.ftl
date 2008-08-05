@@ -5,22 +5,23 @@
 <title>List ${entityName?cap_first}</title>
 </head>
 <body>
-<@ecstart action="${entityName}"/>
+<#assign readonly="${readonly?string}"/>
+<@ecstart action="${entityName}" readonly="${readonly}"/>
 	<#list naturalIds?keys as name>
-		<#call ectheadtd name="${name}" editable=!naturalIdsImmatuable/>
+		<#call ectheadtd name="${name}" editable=(readonly=='false')&&!naturalIdsImmatuable/>
 	</#list>
 	<#list formElements?keys as name>
 		<#if !(naturalIds?keys?seq_contains(name))>
-			<#call ectheadtd name="${name}" editable=!formElements[name].readonly/>
+			<#call ectheadtd name="${name}" editable=(readonly=='false')&&!formElements[name].readonly/>
 		</#if>
 	</#list>
-<@ecmiddle/>
+<@ecmiddle readonly="${readonly}"/>
 <#assign index=0>
 <#list resultPage.result as entity>
 <#assign index=index+1>
-<@ectbodytrstart recordKey="${entity.id}" odd=(index%2==1)/>
+<@ectbodytrstart recordKey="${entity.id}" odd=(index%2==1) readonly="${readonly}"/>
 	<#list naturalIds?keys as name>
-		<#if !naturalIdsImmatuable>
+		<#if (readonly=='false')&&!naturalIdsImmatuable>
 		<#call ectbodytd cellName="${entityName}.${name}" value="${entity[name]?if_exists?string}" cellEdit="input"/>
 		<#else>
 		<#call ectbodytd cellName="${entityName}.${name}" value="${entity[name]?if_exists?string}"/>
@@ -28,7 +29,7 @@
 	</#list>
 	<#list formElements?keys as name>
 		<#if !(naturalIds?keys?seq_contains(name))>
-			<#if !formElements[name].readonly>
+			<#if (readonly=='false')&&!formElements[name].readonly>
 				<#if formElements[name].type=='input'||formElements[name].type=='textarea'>
 					<#call ectbodytd cellName="${entityName}.${name}" value="${entity[name]?if_exists?string}" cellEdit="input"/>
 				</#if>
@@ -43,10 +44,11 @@
 			</#if>
 		</#if>
 	</#list>	
-<@ectbodytrend  recordKey="${entity.id}"/>
+<@ectbodytrend  recordKey="${entity.id}" readonly="${readonly}"/>
 </#list>
-<@ecend/>
+<@ecend readonly="${readonly}"/>
 
+<#if readonly=='false'>
 <div style="display: none">
 <#list formElements?keys as key>
 	<#if formElements[key].type=='select'>
@@ -60,5 +62,6 @@
 	</textarea>
 	</#if>
 </#list></div>
+</#if>
 </body>
 </html>

@@ -24,6 +24,7 @@ import org.ecside.common.util.RequestUtil;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.ironrhino.common.model.ResultPage;
+import org.ironrhino.core.annotation.AutoConfig;
 import org.ironrhino.core.annotation.FormElement;
 import org.ironrhino.core.annotation.NaturalId;
 import org.ironrhino.core.annotation.NotInCopy;
@@ -53,6 +54,12 @@ public class EntityAction extends BaseAction {
 	private ResultPage resultPage;
 
 	private Entity entity;
+
+	private boolean readonly;
+
+	public boolean isReadonly() {
+		return readonly;
+	}
 
 	public ResultPage getResultPage() {
 		return resultPage;
@@ -88,6 +95,10 @@ public class EntityAction extends BaseAction {
 		resultPage = baseManager.getResultPage(resultPage);
 		request.setAttribute("recordList", resultPage.getResult());
 		request.setAttribute("totalRows", resultPage.getTotalRecord());
+
+		AutoConfig ac = (AutoConfig) getEntityClass().getAnnotation(
+				AutoConfig.class);
+		readonly = (ac != null) && ac.readonly();
 		return LIST;
 	}
 

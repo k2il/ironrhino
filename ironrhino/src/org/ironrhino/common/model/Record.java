@@ -5,7 +5,7 @@ import java.util.Date;
 import org.ironrhino.core.annotation.AutoConfig;
 import org.ironrhino.core.model.BaseEntity;
 
-@AutoConfig
+@AutoConfig(readonly=true)
 public class Record extends BaseEntity {
 
 	private String operatorId;
