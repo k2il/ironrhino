@@ -78,6 +78,12 @@ public class EntityAction extends BaseAction {
 		this.customizableEntityChanger = customizableEntityChanger;
 	}
 
+	private boolean readonly() {
+		AutoConfig ac = (AutoConfig) getEntityClass().getAnnotation(
+				AutoConfig.class);
+		return (ac != null) && ac.readonly();
+	}
+
 	public String list() {
 		baseManager.setEntityClass(getEntityClass());
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -95,14 +101,13 @@ public class EntityAction extends BaseAction {
 		resultPage = baseManager.getResultPage(resultPage);
 		request.setAttribute("recordList", resultPage.getResult());
 		request.setAttribute("totalRows", resultPage.getTotalRecord());
-
-		AutoConfig ac = (AutoConfig) getEntityClass().getAnnotation(
-				AutoConfig.class);
-		readonly = (ac != null) && ac.readonly();
+		readonly = readonly();
 		return LIST;
 	}
 
 	public String input() {
+		if (readonly())
+			return NONE;
 		baseManager.setEntityClass(getEntityClass());
 		if (getUid() != null)
 			entity = baseManager.get(getUid());
@@ -118,6 +123,8 @@ public class EntityAction extends BaseAction {
 	}
 
 	public String save() {
+		if (readonly())
+			return NONE;
 		baseManager.setEntityClass(getEntityClass());
 		entity = getEntity();
 		BeanWrapperImpl bw = new BeanWrapperImpl(entity);
@@ -221,6 +228,8 @@ public class EntityAction extends BaseAction {
 	}
 
 	public String delete() {
+		if (readonly())
+			return NONE;
 		baseManager.setEntityClass(getEntityClass());
 		String[] arr = getId();
 		Serializable[] id = (arr != null) ? new Serializable[arr.length]
