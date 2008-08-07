@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountManagerImpl extends BaseManagerImpl<Account> implements
 		AccountManager {
 
-	private UserCache userCache;
+	private UserCache accountCache;
 
 	private RegionTreeControl regionTreeControl;
 
@@ -44,8 +44,8 @@ public class AccountManagerImpl extends BaseManagerImpl<Account> implements
 		this.regionTreeControl = regionTreeControl;
 	}
 
-	public void setUserCache(UserCache userCache) {
-		this.userCache = userCache;
+	public void setAccountCache(UserCache accountCache) {
+		this.accountCache = accountCache;
 	}
 
 	@Transactional
@@ -54,9 +54,9 @@ public class AccountManagerImpl extends BaseManagerImpl<Account> implements
 			account.setRegion(regionTreeControl.parseByAddress(account
 					.getAddress()));
 		super.save(account);
-		if (userCache != null) {
+		if (accountCache != null) {
 			populateAuthorities(account);
-			userCache.putUserInCache(account);
+			accountCache.putUserInCache(account);
 		}
 	}
 

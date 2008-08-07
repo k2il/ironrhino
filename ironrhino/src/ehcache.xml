@@ -45,7 +45,7 @@
 		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" />
 
 	<!-- spring security cache-->
-	<cache name="userCache" maxElementsInMemory="10000" eternal="true"
+	<cache name="accountCache" maxElementsInMemory="10000" eternal="true"
 		overflowToDisk="true" />
 
 </ehcache>
