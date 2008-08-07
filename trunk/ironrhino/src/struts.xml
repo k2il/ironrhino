@@ -35,7 +35,7 @@
 				<interceptor-ref name="checkbox" />
 				<interceptor-ref name="actionMappingParams" />
 				<interceptor-ref name="params">
-					<param name="excludeParams">dojo\..*</param>
+					<param name="excludeParams">dojo\..*,_.*_</param>
 				</interceptor-ref>
 				<interceptor-ref name="conversionError" />
 				<interceptor-ref name="annotationWorkflow" />
