@@ -18,12 +18,28 @@ import org.ironrhino.ums.model.User;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.providers.dao.UserCache;
 import org.springframework.security.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
-
 public class UserManagerImpl extends BaseManagerImpl<User> implements
 		UserManager {
+
+	private UserCache userCache;
+
+	public void setUserCache(UserCache userCache) {
+		this.userCache = userCache;
+	}
+
+	@Transactional
+	public void save(User user) {
+		super.save(user);
+		if (userCache != null) {
+			populateAuthorities(user);
+			userCache.putUserInCache(user);
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public User loadUserByUsername(String username) {
 		User user = getUserByUsername(username);
