@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.ironrhino.pms.model"
+	default-lazy="true">
+	<class name="Product" table="pms_product" dynamic-insert="true"
+		dynamic-update="true">
+		<id name="id" type="java.lang.String" length="32"
+			unsaved-value="null">
+			<generator class="uuid" />
+		</id>
+		<natural-id>
+			<property name="code" not-null="true" />
+		</natural-id>
+		<property name="name" not-null="true" />
+		<property name="description" />
+		<property name="inventory" />
+		<property name="price" />
+		<property name="status">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">
+					org.ironrhino.pms.model.ProductStatus
+				</param>
+				<!-- if set type=12 then use name not ordinal
+					<param name="type">12</param>
+					-->
+			</type>
+		</property>
+		<property name="displayOrder" />
+		<property name="pictureQuantity" />
+		<property name="createDate" />
+		<property name="modifyDate" />
+		<dynamic-component name="customProperties" insert="true"
+			update="true" optimistic-lock="true">
+		</dynamic-component>
+		<many-to-one name="category" column="categoryId" />
+		<list name="tags" table="pms_productTag" fetch="subselect"
+			cascade="all" lazy="false">
+			<key column="productId" />
+			<list-index column="lineNumber" />
+			<composite-element
+				class="org.ironrhino.common.model.SimpleElement">
+				<property name="value" not-null="true" />
+			</composite-element>
+		</list>
+		<list name="attributes" table="pms_productAttribute"
+			fetch="subselect" cascade="all" lazy="false">
+			<key column="productId" />
+			<list-index column="lineNumber" />
+			<composite-element
+				class="org.ironrhino.common.model.Attribute">
+				<property name="name" />
+				<property name="value" />
+			</composite-element>
+		</list>
+	</class>
+</hibernate-mapping>

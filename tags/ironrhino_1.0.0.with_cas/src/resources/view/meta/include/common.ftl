@@ -1,0 +1,86 @@
+<#macro authorize ifAllGranted="" ifAnyGranted="" ifNotGranted="" expression="">
+<#if statics['org.ironrhino.core.util.AuthzUtils'].authorize(ifAllGranted,ifAnyGranted,ifNotGranted,expression)>
+<#nested>
+</#if>
+</#macro>
+
+<#function authentication property>
+  <#return statics['org.ironrhino.core.util.AuthzUtils'].authentication(property)>
+</#function>
+
+<#macro cache key scope="application" timeToIdle="-1" timeToLive="3600">
+<#assign keyExists=statics['org.ironrhino.core.cache.CacheContext'].eval(key)??>
+<#assign content=statics['org.ironrhino.core.cache.CacheContext'].getPageFragment(key,scope)!>
+<#if keyExists&&content??&&content?length gt 0>${content}<#else>
+<#assign content><#nested/></#assign>  
+${content}
+${statics['org.ironrhino.core.cache.CacheContext'].putPageFragment(key,content,scope,timeToIdle,timeToLive)}
+</#if>
+</#macro>
+
+<#macro includePage path>
+<#local pageManager=statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('pageManager')>
+<#if (Parameters.preview!)=='true'>
+<#local page=pageManager.getDraftByPath(path)!>
+<#else>
+<#local page=pageManager.getByPath(path)!>
+</#if>
+<#if page??>
+<#local content=page.content?interpret>
+<@content/>
+</#if>
+</#macro>
+
+<#macro captcha theme="">
+<#if captchaRequired!>
+	<@s.textfield label="%{getText('captcha')}" name="captcha" size="6" cssClass="autocomplete_off required captcha"/>
+</#if>
+</#macro>
+
+<#function btn text="" onclick="" type="" id="" class="" href="">
+	<#if id!=''>
+	<#local _id=' id="'+id+'"'>
+	<#if text==''>
+		<#local text=id?replace('_', ' ')>
+	</#if>
+	</#if>
+	<#if type!=''>
+	<#local _type=' type="'+type+'"'>
+	<#else>
+	<#local _type=' type="button"'>
+	</#if>
+	<#if onclick!=''>
+	<#local _onclick=' onclick="'+onclick+'"'>
+	</#if>
+	<#if class!=''>
+	<#local _class=' class="btn '+class+'"'>
+	<#else>
+	<#local _class=' class="btn"'>
+	</#if>
+<#if type=='link'>
+  <#return '<a'+(_id!)+(_onclick!)+(_class)+' href="'+href+'"><span><span>'+text+'</span></span></a>'>
+</#if>
+  <#return '<button'+(_id!)+(_type!)+(_onclick!)+(_class)+'><span><span>'+text+'</span></span></button>'>
+</#function>
+
+<#macro button text="" type="" class="" extra...>
+<#if text==''>
+	<#local text=(extra['id']!'')?replace('_', ' ')>
+</#if>
+<#if class!=''>
+	<#local class='btn '+class>
+<#else>
+	<#local class='btn'>
+</#if>
+<#local tag='button'>
+<#if type=='link'>
+<#local tag='a'>
+<#else>
+<#if type==''>
+<#local _type=' type="button"'>
+<#else>
+<#local _type=' type="'+type+'"'>
+</#if>
+</#if>
+<${tag} <#list extra?keys as attr>${attr}="${extra[attr]?html}" </#list>${_type!} class="${class}"><span><span>${text}</span></span></${tag}>
+</#macro>

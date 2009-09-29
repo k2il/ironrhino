@@ -1,0 +1,21 @@
+form input.required {
+	background: url(../images/required.png) no-repeat right;
+}
+
+form p {
+	margin: 10px;
+}
+
+label {
+	display: block;
+	float: left;
+	width: 80px;
+}
+
+p.top label {
+	float: none;
+}
+
+.field_error {
+	color: red;
+}

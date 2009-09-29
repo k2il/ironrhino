@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="scheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="triggerJobDetailTicketRegistryCleaner" />
+				<ref local="dailyBatchExecutorTrigger" />
+				<ref local="weeklyBatchExecutorTrigger" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dailyBatchExecutorTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<bean
+				class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="dailyBatchExecutor" />
+				<property name="targetMethod" value="execute" />
+			</bean>
+		</property>
+		<property name="cronExpression" value="0 5 0 * * ?" />
+	</bean>
+
+	<bean id="dailyBatchExecutor" autowire="byName"
+		class="org.ironrhino.common.support.BatchExecutor">
+		<property name="commands">
+			<list>
+				<value>monitorControl.archive()</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="weeklyBatchExecutorTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<bean
+				class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="weeklyBatchExecutor" />
+				<property name="targetMethod" value="execute" />
+			</bean>
+		</property>
+		<property name="cronExpression" value="0 50 23 ? * MON" />
+	</bean>
+
+	<bean id="weeklyBatchExecutor" autowire="byName"
+		class="org.ironrhino.common.support.BatchExecutor">
+		<property name="commands">
+			<list>
+				<value>userManager.deleteDisabled()</value>
+			</list>
+		</property>
+	</bean>
+</beans>
