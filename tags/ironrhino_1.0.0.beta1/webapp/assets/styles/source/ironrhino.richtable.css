@@ -1,0 +1,176 @@
+.richtable {
+	border: 0px solid red;
+	padding: 0px;
+	margin: 0px;
+}
+
+.richtable .inputtext {
+	border: 1px solid #cc9966;
+	font-size: 12px;
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+}
+
+.richtable input.radio {
+	font-size: 12px;
+	width: auto;
+}
+
+.richtable select {
+	border: solid 1px #EEEEEE;
+	width: 75px;
+}
+
+.richtable .tableHeader {
+	white-space: nowrap;
+	word-break: keep-all;
+	word-wrap: normal;
+	color: #3A3A3A;
+	font-weight: bolder;
+	height: 24px;
+	text-align: center;
+	overflow: visible;
+}
+
+.richtable .resizeTitle {
+	float: left;
+	width: 90%;
+	text-align: center;
+}
+
+.richtable .resizeBar {
+	padding: 0px;
+	margin: 0px;
+	float: right;
+	cursor: e-resize;
+	width: 3px;
+	height: 15px;
+	font-size: 1px;
+	vertical-align: top;
+	background-color: #cccccc;
+	display: inline;
+}
+
+.richtable .odd a,.even a {
+	color: Black;
+}
+
+.richtable .odd td {
+	background-color: #FFFFFF;
+}
+
+.richtable .even td {
+	background-color: #f3f4f3;
+}
+
+.richtable .selected td {
+	background-color: #ddeeff;
+}
+
+.richtable .selected a,.highlight a {
+	color: black;
+}
+
+.richtable .selected td {
+	background-color: #ffeedd;
+}
+
+.richtable .selected a,.selectlight a {
+	color: black;
+}
+
+.richtable .odd div.ellipsis,.richtable .even div.ellipsis,.richtable.highlight div.ellipsis,.richtable .selectlight DIV.ellipsis
+	{
+	text-align: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: #3a3a3a;
+	width: 100%;
+}
+
+.richtable .odd .editedCell,.richtable .even .editedCell,.richtable .highlight .editedCell,.richtable .selectlight .editedCell
+	{
+	background-color: #fff3f0;
+}
+
+.richtable .titleRow {
+	color: #444444;
+	font-weight: bold;
+	font-size: 12px;
+	vertical-align: middle;
+}
+
+.richtable .pageNav {
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 0px #dddddd none;
+	height: 20px;
+	width: 20px;
+	cursor: pointer;
+}
+
+.richtable .jumpPage {
+	background-image: url(../images/gotoPage.gif);
+}
+
+.richtable .firstPage {
+	background-image: url(../images/firstPage.gif);
+}
+
+.richtable .prevPage {
+	background-image: url(../images/prevPage.gif);
+}
+
+.richtable .nextPage {
+	background-image: url(../images/nextPage.gif);
+}
+
+.richtable .lastPage {
+	background-image: url(../images/lastPage.gif);
+}
+
+.richtable .firstPageD {
+	background-image: url(../images/firstPageDisabled.gif);
+}
+
+.richtable .prevPageD {
+	background-image: url(../images/prevPageDisabled.gif);
+}
+
+.richtable .nextPageD {
+	background-image: url(../images/nextPageDisabled.gif);
+}
+
+.richtable .lastPageD {
+	background-image: url(../images/lastPageDisabled.gif);
+}
+
+.richtable .toolbar select {
+	width: 50px;
+}
+
+.richtable .toolbar .toolbarTable {
+	border: 0px;
+	width: 100%;
+}
+
+.richtable .toolbar .toolbarTable td {
+	border: 0px;
+}
+
+.richtable .toolbar .toolbarTable .statusTool {
+	border: 0px solid red;
+	padding-top: 2px;
+	text-align: right;
+	white-space: nowrap;
+	word-break: keep-all;
+	word-wrap: normal;
+}
+
+.richtable .jumpPageInput {
+	width: 25px;
+	margin-top: 0px;
+}

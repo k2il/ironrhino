@@ -1,0 +1,22 @@
+package org.ironrhino.common.service;
+
+import org.ironrhino.common.model.Page;
+import org.ironrhino.core.service.BaseManager;
+
+public interface PageManager extends BaseManager<Page> {
+
+	public void save(Page page);
+	
+	public void delete(Page page);
+
+	public Page getByPath(String path);
+
+	public Page saveDraft(Page page);
+
+	public Page getDraftByPath(String path);
+
+	public Page dropDraft(String id);
+
+	public void pullDraft(Page page);
+
+}
