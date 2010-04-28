@@ -1,0 +1,48 @@
+input,select,checkbox {
+	border: 1px solid #0064b4;
+}
+
+select {
+	width: 150px;
+}
+
+select.combox{
+	cursor: text;
+}
+
+input.integer,input.double {
+	width: 90px;
+	font-family: Arial;
+}
+
+input.date {
+	width: 80px;
+	font-family: Arial;
+}
+
+input.required {
+	background: #FFF url(../images/required.png) no-repeat right;
+}
+
+form div {
+	margin: 5px 0px 5px 0px;
+}
+
+form.line>div {
+	margin-right: 2px;
+	float: left;
+}
+
+form label.field {
+	display: block;
+	float: left;
+	width: 80px;
+}
+
+div.top label {
+	float: none;
+}
+
+.field_error {
+	color: red;
+}
