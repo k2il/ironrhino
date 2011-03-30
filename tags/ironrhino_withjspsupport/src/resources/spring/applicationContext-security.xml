@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<security:http access-denied-page="/WEB-INF/view/jsp/error/403.jsp"
+		entry-point-ref="entryPoint" access-decision-manager-ref="accessDecisionManager">
+		<security:intercept-url pattern="/assets/**" filters="none"/>
+		<security:intercept-url pattern="/common/**" access="ROLE_ADMINISTRATOR"/>
+		<security:intercept-url pattern="/login" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/signup" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/signup/**" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/socialauth" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/socialauth/**" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/setup" access="ROLE_BUILTIN_ANONYMOUS"/>
+		<security:intercept-url pattern="/**" access="ROLE_BUILTIN_USER"/>
+		<security:session-management session-fixation-protection="migrateSession" />
+		<security:remember-me services-ref="rememberMeServices" />
+		<security:anonymous granted-authority="ROLE_BUILTIN_ANONYMOUS" username="anonymousUser" key="anonymous" />
+		<security:logout logout-url="/logout" logout-success-url="/" invalidate-session="true" />
+		<security:custom-filter ref="authenticationFilter" position="FORM_LOGIN_FILTER"/>
+		<!--
+			<security:intercept-url pattern="/switch" access="ROLE_ADMINISTRATOR"/>
+			<security:intercept-url pattern="/exit" access="ROLE_PREVIOUS_ADMINISTRATOR"/>
+			<security:custom-filter ref="switchUserProcessingFilter" position="SWITCH_USER_FILTER"/>
+			-->
+	</security:http>
+	
+	<bean
+		id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<bean
+					class="org.springframework.security.access.vote.RoleVoter">
+					<property name="rolePrefix" value="" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="rememberMeServices"
+		class="org.ironrhino.core.spring.security.DefaultTokenBasedRememberMeServices"
+		p:key="youcannotguessme" p:parameter="rememberme" p:cookieName="rm"
+		p:userDetailsService-ref="userManager" />	
+		
+	<bean id="passwordEncoder"
+		class="org.ironrhino.core.spring.security.MixedPasswordEncoder" />
+	
+	<!--	
+	<bean id="passwordEncoder"
+		class="org.ironrhino.core.spring.security.password.MultiVersionPasswordEncoder" >
+		<property name="versions">
+			<list>
+				<bean class="org.ironrhino.core.spring.security.password.V1PasswordEncoder"/>
+			</list>
+		</property>
+	</bean>
+	-->
+
+	<!--
+		<bean id="switchUserProcessingFilter"
+			class="org.springframework.security.web.authentication.switchuser.SwitchUserFilter"
+			p:userDetailsService-ref="userManager" p:switchUserUrl="/switch"
+			p:exitUserUrl="/exit" p:targetUrl="/" />
+		-->
+	
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider user-service-ref="userManager">
+			<security:password-encoder ref="passwordEncoder" />
+		</security:authentication-provider>
+		<security:authentication-provider ref="rememberMeAuthenticationProvider">  
+			<security:password-encoder ref="passwordEncoder" />  
+		</security:authentication-provider>  
+	</security:authentication-manager>
+	<bean id="entryPoint" class="org.ironrhino.core.spring.security.DefaultLoginUrlAuthenticationEntryPoint"
+		p:loginFormUrl="/login" p:forceHttps="false" />
+	<bean id="authenticationFilter"
+		class="org.ironrhino.core.spring.security.DefaultUsernamePasswordAuthenticationFilter"
+		p:usernameParameter="username" p:passwordParameter="password"
+		p:filterProcessesUrl="/check" p:authenticationManager-ref="authenticationManager"
+		p:rememberMeServices-ref="rememberMeServices">
+	</bean>
+	<bean id="rememberMeAuthenticationProvider"  
+		class="org.springframework.security.authentication.RememberMeAuthenticationProvider" 
+		p:key="youcannotguessme"/>
+</beans>

@@ -1,0 +1,23 @@
+.sortcol div.sort{
+	cursor: pointer;
+	position: relative;
+}
+.sortcol span.sort{
+	position:absolute;
+	display: block;
+	left:0px;
+	top:8px;
+	width:0;
+	height:0;
+	border-width:4px;
+	border-style:solid;
+	border-color:#888 transparent #888 transparent;
+	font-size:0;
+	line-height:0;
+}
+.sortdesc span.sort{
+	border-color:#222 transparent transparent transparent;
+}
+.sortasc span.sort{
+	border-color:transparent transparent #222 transparent;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.ironrhino.security.model"
+	default-lazy="true">
+	<class name="User" table="user">
+		<id name="id" type="java.lang.String" length="32" unsaved-value="null">
+			<generator class="uuid" />
+		</id>
+		<natural-id>
+			<property name="username" not-null="true" />
+		</natural-id>
+		<property name="password" not-null="true" />
+		<property name="name" />
+		<property name="email" unique="true" />
+		<property name="openid" unique="true" />
+		<property name="phone" />
+		<property name="enabled" />
+		<property name="createDate" />
+		<property name="modifyDate" />
+		<many-to-one name="createUser" class="User" column="createUser" not-null="false" lazy="proxy" />
+		<many-to-one name="modifyUser" class="User" column="modifyUser" not-null="false" lazy="proxy" />
+		<property name="rolesAsString" type="java.lang.String" column="roles" length="500"/>
+		<property name="attributes" type="java.lang.String" column="attributes" length="500"/>
+	</class>
+</hibernate-mapping>

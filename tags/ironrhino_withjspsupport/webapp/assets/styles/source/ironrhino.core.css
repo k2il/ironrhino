@@ -1,0 +1,120 @@
+#indicator {
+	position: fixed;
+	z-index: 10000;
+	left: 50%;
+	top: 0px;
+	height: 20px;
+	width: 100px;
+	float: right;
+	color: #FFF;
+	padding: 0px 2px;
+	background: #F00;
+	margin-left: -60px;
+	border-radius: 0px 0px 5px 5px;
+	-webkit-border-radius: 0px 0px 5px 5px;
+	-moz-border-radius: 0px 0px 5px 5px;
+}
+
+#indicator.loading {
+	padding: 0px 2px 0px 25px;
+	background: #F00 url(../images/indicator.gif) 0px 0px no-repeat;
+}
+
+div.field_error,div.action_error,ul.field_error li {
+	height: 1.5em;
+	line-height: 1.5em;
+	margin: 5px;
+	padding: 2px 2px 1px 20px;
+	border: 1px solid #F60;
+	vertical-align: middle;
+	background: #FFF2E9 url(../images/msg.png) 2px -42px no-repeat;
+	color: #000;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+
+div.action_message,ul.action_message li {
+	height: 1.5em;
+	line-height: 1.5em;
+	margin: 5px;
+	padding: 2px 2px 1px 20px;
+	border: 1px solid #669eff;
+	vertical-align: middle;
+	background: #e8eef7 url(../images/msg.png) 2px 2px no-repeat;
+	color: #000;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+
+.field_error .close,.action_error .close {
+	width: 15px;
+	height: 15px;
+	float: right;
+	cursor: pointer;
+	background: url(../images/msg.png) 0px -66px no-repeat;
+}
+
+.action_message .close {
+	width: 15px;
+	height: 15px;
+	float: right;
+	cursor: pointer;
+	background: url(../images/msg.png) 0px -22px no-repeat;
+}
+
+img.captcha {
+	height: 25px;
+	width: 100px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.highlight {
+	background: #FF6;
+}
+
+tr.highlight td{
+	background: #ddeeff !important;
+}
+
+#treeview li.highlight {
+	font-weight:bold;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.link {
+	color: #00C;
+	cursor: pointer;
+	text-decoration: underline;
+	white-space: nowrap;
+}
+
+.draggable {
+	cursor: move;
+}
+
+
+.ondrop {
+	border: 1px dashed #b00;
+}
+
+thead,tfoot {
+	background-color: #E5ECF9;
+}
+
+tr.selected {
+	background: #EBC79E;
+}
+
+.crumbs{
+margin: 10px;
+}
+.crumbs a {
+color: #36C;
+text-decoration: none;
+}
