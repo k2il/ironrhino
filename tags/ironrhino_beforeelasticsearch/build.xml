@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ironrhino" default="jar" basedir=".">
+
+	<property name="version" value="1.0" />
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="webapp.dir" location="${basedir}/webapp" />
+	<property name="lib.dir" location="${basedir}/lib" />
+	<property name="classes.dir" location="${webapp.dir}/WEB-INF/classes" />
+	<property name="target.dir" location="${basedir}/target" />
+	<property name="test.dir" location="${basedir}/test" />
+	<property name="test.src.dir" location="${basedir}/test/src" />
+	<property name="test.classes.dir" location="${basedir}/test/classes" />
+	<property name="test.results.dir" location="${basedir}/test/results" />
+	<property name="reference.dir" location="${basedir}/docs/reference" />
+	<property name="skeleton-zip.name" value="ironrhino-skeleton-${version}.zip" />
+	<property name="war.name" value="ironrhino.war" />
+
+	<path id="lib.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${webapp.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${target.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${test.classes.dir}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${test.classes.dir}" />
+		<delete dir="${target.dir}" />
+	</target>
+
+	<target name="compile">
+		<antcall target="clean" />
+		<antcall target="init" />
+		<javac includeantruntime="false" debug="true" debuglevel="vars,lines" srcdir="${src.dir}" destdir="${classes.dir}" encoding="utf-8">
+			<classpath refid="lib.classpath" />
+			<compilerarg line="-Xlint:unchecked"/>
+		</javac>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="test" depends="compile">
+		<mkdir dir="${test.classes.dir}" />
+		<javac includeantruntime="false" debug="true" debuglevel="vars,lines" srcdir="${test.src.dir}" destdir="${test.classes.dir}"
+			encoding="UTF-8">
+			<classpath>
+				<path refid="lib.classpath" />
+				<pathelement location="${classes.dir}" />
+			</classpath>
+		</javac>
+		<copy todir="${test.classes.dir}">
+			<fileset dir="${test.src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<mkdir dir="${test.results.dir}" />
+		<junit haltonfailure="no" printsummary="on">
+			<classpath>
+				<path refid="lib.classpath" />
+				<pathelement location="${classes.dir}" />
+				<pathelement location="${test.classes.dir}" />
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<formatter type="plain" />
+			<formatter type="xml" />
+			<batchtest todir="${test.results.dir}">
+				<fileset dir="${test.classes.dir}" includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+	</target>
+
+	<import file="build.jar.xml"/>
+	
+	<import file="build.compress.xml"/>
+
+	<target name="skeleton" depends="jar,compress">
+		<move todir="${webapp.dir}/WEB-INF/lib">
+			<fileset dir="${target.dir}">
+				<include name="ironrhino-*.jar" />
+			</fileset>
+		</move>
+		<mkdir dir="${basedir}/template/src/resources/spring" />
+		<copy todir="${basedir}/template/src/resources/spring">
+			<fileset dir="${src.dir}/resources/spring">
+				<exclude name="applicationContext-security.xml" />
+			</fileset>
+		</copy>
+		<mkdir dir="${basedir}/template/src/resources/view/decorator" />
+		<copy todir="${basedir}/template/src/resources/view/decorator">
+			<fileset dir="${src.dir}/resources/view/decorator" />
+		</copy>
+		<zip destfile="${target.dir}/${skeleton-zip.name}" basedir="."
+			excludes="build.xml,docs/**,target/**,test/classes/**,test/src/org/ironrhino/core/**,webapp/WEB-INF/classes/**,webapp/assets/*/source/**,src/org/**,src/com/**,src/META-INF/**,src/struts-plugin.xml,src/template/**,src/resources/data/**,src/resources/hibernate/**,src/resources/i18n/**,src/resources/view/**,src/resources/spring/**" />
+		<delete dir="${basedir}/template" />
+		<move todir="${target.dir}">
+			<fileset dir="${webapp.dir}/WEB-INF/lib">
+				<include name="ironrhino-*.jar" />
+			</fileset>
+		</move>
+	</target>
+
+
+	<target name="doc.clean"
+		description="Delete temporary and distribution directories for docs">
+		<delete dir="${reference.dir}/pdf" />
+		<delete dir="${reference.dir}/html_single" />
+		<delete dir="${reference.dir}/html" />
+		<delete dir="${reference.dir}/lib" />
+	</target>
+	<target name="doc.prepare" description="Extra preparation for the documentation">
+		<unzip src="${reference.dir}/docbook-reference-libs.zip" dest="${reference.dir}/" />
+		<fail
+			message="XSLT supporting lib not installed. Please see docs/reference/readme.txt for instructions.">
+			<condition>
+				<not>
+					<available file="${reference.dir}/lib" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+	<target name="doc.pdf" depends="doc.prepare"
+		description="Compile reference documentation to pdf">
+		<mkdir dir="${reference.dir}/pdf/images" />
+		<copy todir="${reference.dir}/pdf/images">
+			<fileset dir="${reference.dir}/src/images">
+				<include name="*.gif" />
+				<include name="*.svg" />
+				<include name="*.jpg" />
+				<include name="*.png" />
+			</fileset>
+		</copy>
+		<java classname="com.icl.saxon.StyleSheet" fork="true"
+			dir="${reference.dir}">
+			<classpath>
+				<fileset dir="${reference.dir}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="-o" />
+			<arg value="${reference.dir}/pdf/docbook_fop.tmp" />
+			<arg value="${reference.dir}/src/reference.xml" />
+			<arg value="${reference.dir}/styles/fopdf.xsl" />
+		</java>
+		<java classname="org.apache.fop.apps.Fop" fork="true" maxmemory="256m"
+			dir="${reference.dir}">
+			<classpath>
+				<fileset dir="${reference.dir}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="${reference.dir}/pdf/docbook_fop.tmp" />
+			<arg value="${reference.dir}/pdf/ironrhino-reference.pdf" />
+		</java>
+		<delete file="${reference.dir}/pdf/docbook_fop.tmp" />
+	</target>
+	<target name="doc.html" depends="doc.prepare"
+		description="Compile reference documentation to chunked html">
+		<mkdir dir="${reference.dir}/html/images" />
+		<copy todir="${reference.dir}/html/images">
+			<fileset dir="${reference.dir}/src/images">
+				<include name="*.gif" />
+				<include name="*.svg" />
+				<include name="*.jpg" />
+				<include name="*.png" />
+			</fileset>
+		</copy>
+		<copy todir="${reference.dir}/styles">
+			<fileset dir="${reference.dir}/styles">
+				<include name="*.css" />
+			</fileset>
+		</copy>
+		<java classname="com.icl.saxon.StyleSheet" fork="true"
+			dir="${reference.dir}/html/">
+			<classpath>
+				<fileset dir="${reference.dir}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="${reference.dir}/src/reference.xml" />
+			<arg value="${reference.dir}/styles/html_chunk.xsl" />
+		</java>
+	</target>
+	<target name="doc.htmlsingle" depends="doc.prepare"
+		description="Compile reference documentation to single html">
+		<mkdir dir="${reference.dir}/html_single/images" />
+		<copy todir="${reference.dir}/html_single/images">
+			<fileset dir="${reference.dir}/src/images">
+				<include name="*.gif" />
+				<include name="*.svg" />
+				<include name="*.jpg" />
+				<include name="*.png" />
+			</fileset>
+		</copy>
+		<copy todir="${reference.dir}/html_single/">
+			<fileset dir="${reference.dir}/styles">
+				<include name="*.css" />
+			</fileset>
+		</copy>
+		<java classname="com.icl.saxon.StyleSheet" fork="true"
+			dir="${reference.dir}">
+			<classpath>
+				<fileset dir="${reference.dir}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="-o" />
+			<arg value="${reference.dir}/html_single/index.html" />
+			<arg value="${reference.dir}/src/reference.xml" />
+			<arg value="${reference.dir}/styles/html.xsl" />
+		</java>
+	</target>
+	<target name="doc.all" depends="doc.html,doc.htmlsingle,doc.pdf"
+		description="Generate and copy reference documentation">
+		<move file="${reference.dir}/pdf" todir="${target.dir}/docs" />
+		<move file="${reference.dir}/html_single" todir="${target.dir}/docs" />
+		<move file="${reference.dir}/html" todir="${target.dir}/docs" />
+	</target>
+
+	<target name="dist">
+		<exec executable="svn" dir="${basedir}">
+			<arg value="update" />
+		</exec>
+		<antcall target="compile" />
+		<antcall target="jar" />
+	</target>
+
+</project>

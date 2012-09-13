@@ -1,0 +1,17 @@
+table .resizeTitle {
+	float: left;
+	width: 95%;
+	text-align: center;
+	line-height:200%;
+}
+table .resizeBar {
+	padding: 0px;
+	margin-right: 2px;
+	float: right;
+	cursor: col-resize;
+	width: 1px;
+	height: 24px;
+	font-size: 1px;
+	background-color: #cccccc;
+	display: inline;
+}
